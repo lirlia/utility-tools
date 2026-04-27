@@ -5,20 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Utility Tools</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
-    <header class="bg-blue-500 text-white py-4 shadow-md">
-        <h1 class="text-3xl text-center">Utility Tools</h1>
+<body class="bg-gray-50">
+    <header class="bg-blue-600 text-white py-4 shadow-md w-full text-center">
+        <h1 class="text-4xl">Utility Tools</h1>
     </header>
-    <main class="max-w-4xl mx-auto mt-8 p-4">
-        <p class="text-center text-lg">A collection of online tools for your everyday needs.</p>
-        <ul class="mt-6 space-y-4">
-            <li><a href="/markdown_editor.html" class="text-blue-500 hover:underline">Markdown & Mermaid Editor</a></li>
-            <li><a href="/qr_code_tool.html" class="text-blue-500 hover:underline">QR Code Generator</a></li>
+    <main class="flex-grow flex flex-col items-center">
+        <p class="mt-6 text-lg text-gray-800">Explore our collection of online tools:</p>
+        <ul class="space-y-4 mt-8">
+            <li>
+                <a href="markdown_editor.html" class="text-blue-500 underline hover:text-blue-700">
+                    Markdown & Mermaid Editor
+                </a>
+            </li>
+            <li>
+                <a href="qr_code_tool.html" class="text-blue-500 underline hover:text-blue-700">
+                    QR Code Generator
+                </a>
+            </li>
         </ul>
     </main>
-    <footer class="bg-gray-800 text-white text-center py-4 mt-12">
-        <p>© 2026 Utility Tools</p>
+    <footer class="bg-gray-800 text-white py-4 text-center w-full">
+        <p>© 2026 Utility Tools. All rights reserved.</p>
     </footer>
 </body>
 </html>

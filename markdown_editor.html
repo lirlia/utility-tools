@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown and Mermaid Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #editor {
+            width: 50%;
+            padding: 10px;
+            border-right: 1px solid #ccc;
+            height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        #preview {
+            width: 50%;
+            padding: 10px;
+            height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .container {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <h1>Markdown Editor with Mermaid.js</h1>
+    <div class="container">
+        <textarea id="editor" placeholder="Write your Markdown here..."></textarea>
+        <div id="preview"></div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+
+        function renderMarkdown() {
+            const markdownText = editor.value;
+            const html = marked.parse(markdownText);
+            preview.innerHTML = html;
+
+            // Render Mermaid diagrams
+            mermaid.initialize({ startOnLoad: true });
+            document.querySelectorAll('code.language-mermaid').forEach((block) => {
+                const parent = block.parentNode;
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.innerText = block.innerText;
+                parent.replaceChild(mermaidDiv, block);
+                mermaid.init(undefined, mermaidDiv);
+            });
+        }
+
+        editor.addEventListener('input', renderMarkdown);
+
+        // Initialize Editor
+        editor.value = `# Example Mermaid Diagram\n\n\
+\n\n\
+\`\`\`mermaid\nsequenceDiagram\n    Alice->>Bob: Hi Bob!\n    Bob->>Alice: Hi Alice!\n\`\`\`
+        \n------\nReal Test`;
+        renderMarkdown();
+    </script>
+</body>
+</html>

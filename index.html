@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
   <meta name="theme-color" content="#0f766e">
+  <meta name="description" content="JSON整形、JWT解析、Base64変換、QR生成、画像変換、時刻変換などをブラウザだけで使える静的ユーティリティ集。入力データはアップロードされません。">
+  <link rel="canonical" href="https://lirlia.github.io/utility-tools/">
+  <meta property="og:site_name" content="Utility Tools">
+  <meta property="og:title" content="Utility Tools">
+  <meta property="og:description" content="ブラウザだけで使える開発者向け静的ユーティリティ集。入力データはアップロードされません。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lirlia.github.io/utility-tools/">
+  <meta property="og:image" content="https://lirlia.github.io/utility-tools/ogp.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Utility Tools - ブラウザだけで使える開発者向けツール">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Utility Tools">
+  <meta name="twitter:description" content="JSON整形、JWT解析、QR生成、画像変換などをブラウザだけで使える静的ツール集。">
+  <meta name="twitter:image" content="https://lirlia.github.io/utility-tools/ogp.png">
   <title>Utility Tools</title>
   <style>
     :root {
@@ -162,24 +178,6 @@
     }
     .notice h2 { font-size: .98rem; margin: 0 0 .2rem; }
     .notice p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.55; }
-    .quick-tools {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: .65rem;
-      margin-bottom: 1rem;
-    }
-    .quick-tool {
-      min-height: 4.6rem;
-      text-align: left;
-      display: grid;
-      align-content: start;
-      gap: .24rem;
-      background: #fff;
-      border-color: var(--line);
-      box-shadow: 0 8px 24px rgba(20, 32, 28, .05);
-    }
-    .quick-tool strong { font-size: .93rem; }
-    .quick-tool span { color: var(--muted); font-size: .76rem; line-height: 1.35; }
     .tool {
       display: none;
       background: var(--panel);
@@ -315,7 +313,6 @@
         border-color: var(--line);
       }
       .nav-desc { display: none; }
-      .quick-tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grid, .grid.three { grid-template-columns: 1fr; }
       .notice { grid-template-columns: 1fr; }
       .tool-head { flex-direction: column; }
@@ -323,7 +320,7 @@
       .kv { grid-template-columns: 1fr; }
     }
     @media (max-width: 520px) {
-      nav, .quick-tools { grid-template-columns: 1fr; }
+      nav { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -360,8 +357,6 @@
         </div>
       </section>
 
-      <section id="quickTools" class="quick-tools" aria-label="よく使う機能"></section>
-
       <section id="json" class="tool" data-title="JSON Formatter JSON きれい パース まとめる minify">
         <div class="tool-head">
           <div><h2>JSON整形</h2><p>JSONを読みやすく整形、1行に圧縮、キー順に並び替えできます。</p></div>
@@ -375,6 +370,7 @@
             <label for="jsonInput">入力</label>
             <textarea id="jsonInput" placeholder='{"hello":"world"}'></textarea>
             <div class="row">
+              <button id="jsonSample">サンプル入力</button>
               <button class="primary" id="jsonFormat">整形</button>
               <button id="jsonMinify">圧縮</button>
               <button id="jsonSort">キーソート</button>
@@ -398,7 +394,7 @@
           <div class="field">
             <label for="jwtInput">JWT</label>
             <textarea id="jwtInput" placeholder="eyJhbGciOi..."></textarea>
-            <button class="primary" id="jwtParse">パース</button>
+            <div class="row"><button id="jwtSample">サンプル入力</button><button class="primary" id="jwtParse">パース</button></div>
           </div>
           <div class="field">
             <label for="jwtOutput">解析結果</label>
@@ -417,6 +413,7 @@
             <label for="base64Input">入力</label>
             <textarea id="base64Input"></textarea>
             <div class="row">
+              <button id="b64Sample">サンプル入力</button>
               <button class="primary" id="b64Encode">エンコード</button>
               <button id="b64Decode">デコード</button>
               <button id="b64UrlEncode">URL-safe</button>
@@ -442,6 +439,7 @@
             <label for="stringInput">入力</label>
             <textarea id="stringInput"></textarea>
             <div class="row">
+              <button id="stringSample">サンプル入力</button>
               <button class="primary" id="uuidBtn">UUID v4</button>
               <button id="urlEnc">URL encode</button>
               <button id="urlDec">URL decode</button>
@@ -479,6 +477,7 @@ graph TD
 | JSON | ready |
 | QR | ready |
 </textarea>
+            <button id="mdSample">サンプル入力</button>
           </div>
           <div class="field">
             <label>プレビュー</label>
@@ -576,7 +575,7 @@ graph TD
           <div class="field">
             <label for="qrInput">文字列 / URL</label>
             <textarea id="qrInput" class="mini">https://github.com/lirlia/utility-tools</textarea>
-            <button class="primary" id="makeQr">QR生成</button>
+            <div class="row"><button id="qrSample">サンプル入力</button><button class="primary" id="makeQr">QR生成</button></div>
             <div id="qrInfo" class="hint"></div>
           </div>
           <div class="field">
@@ -600,6 +599,7 @@ graph TD
               <select id="toTz"></select>
             </div>
             <div class="row">
+              <button id="timeSample">サンプル入力</button>
               <button class="primary" id="timeNow">現在時刻</button>
               <button id="timeConvert">変換</button>
               <button id="epochConvert">Epochから変換</button>
@@ -650,7 +650,6 @@ graph TD
       ["時刻", "time", "時", "時刻変換", "Epochとタイムゾーン"],
       ["安全", "privacy", "守", "データ保護のしくみ", "外部送信なしを確認"]
     ];
-    const quickToolIds = ["json", "jwt", "base64", "strings", "qr", "time", "media", "privacy"];
 
     function toast(message) {
       const t = $("toast");
@@ -749,6 +748,40 @@ graph TD
       } catch (e) {
         $("jwtOutput").value = `Error: ${e.message}`;
       }
+    }
+    function sampleJwt() {
+      const header = b64EncodeText(JSON.stringify({ alg: "HS256", typ: "JWT" })).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      const payload = b64EncodeText(JSON.stringify({
+        sub: "sample-user-123",
+        name: "Utility Tools Demo",
+        admin: false,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 3600
+      })).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      return `${header}.${payload}.dummy-signature`;
+    }
+    function sampleMarkdown() {
+      return `# Utility Tools Demo
+
+JSON、JWT、Base64、QR生成などをブラウザ内で試せます。
+
+## チェックリスト
+
+- 外部CDNなし
+- 入力データはアップロードしない
+- オフライン対応
+
+\`\`\`mermaid
+graph LR
+  Input[入力] --> Local[ブラウザ内処理]
+  Local --> Output[結果]
+\`\`\`
+
+| Tool | Example |
+| --- | --- |
+| JSON | format |
+| QR | generate |
+`;
     }
     async function sha256(s) {
       const hash = await crypto.subtle.digest("SHA-256", enc.encode(s));
@@ -1222,7 +1255,8 @@ graph TD
       for (let i = 8; i < n - 8; i++) { setM(m, i, 6, i % 2 === 0, true); setM(m, 6, i, i % 2 === 0, true); }
       if (spec.align.length) for (const x of spec.align) for (const y of spec.align) if (!((x === 6 && y === 6) || (x === 6 && y === n - 7) || (x === n - 7 && y === 6))) alignment(m, x, y);
       setM(m, 8, n - 8, true, true);
-      for (let i = 0; i < 9; i++) { setM(m, 8, i, false, true); setM(m, i, 8, false, true); setM(m, n - 1 - i, 8, false, true); setM(m, 8, n - 1 - i, false, true); }
+      for (const [x, y] of qrFormatCoords(n).flat()) setM(m, x, y, false, true);
+      setM(m, 8, n - 8, true, true);
       return m;
     }
     function placeQrData(m, codewords) {
@@ -1256,10 +1290,14 @@ graph TD
     }
     function addFormat(m, mask) {
       const format = [0x77c4,0x72f3,0x7daa,0x789d,0x662f,0x6318,0x6c41,0x6976][mask];
-      const n = m.length;
-      const a = [[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
-      const b = [[n-1,8],[n-2,8],[n-3,8],[n-4,8],[n-5,8],[n-6,8],[n-7,8],[8,n-8],[8,n-7],[8,n-6],[8,n-5],[8,n-4],[8,n-3],[8,n-2],[8,n-1]];
+      const [a, b] = qrFormatCoords(m.length);
       for (let i = 0; i < 15; i++) { const val = ((format >> i) & 1) === 1; setM(m, a[i][0], a[i][1], val, true); setM(m, b[i][0], b[i][1], val, true); }
+    }
+    function qrFormatCoords(n) {
+      return [
+        [[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]],
+        [[n-1,8],[n-2,8],[n-3,8],[n-4,8],[n-5,8],[n-6,8],[n-7,8],[n-8,8],[8,n-7],[8,n-6],[8,n-5],[8,n-4],[8,n-3],[8,n-2],[8,n-1]]
+      ];
     }
     function qrPenalty(m) {
       const n = m.length; let p = 0, dark = 0;
@@ -1300,10 +1338,6 @@ graph TD
       const nav = $("nav");
       const groups = [...new Set(tools.map((t) => t[0]))];
       nav.innerHTML = groups.map((g) => `<div class="nav-group"><strong>${g}</strong>${tools.filter((t) => t[0] === g).map(([, id, icon, label, desc]) => `<button class="nav-link" data-open="${id}"><span class="nav-icon">${icon}</span><span class="nav-text"><span class="nav-label">${label}</span><span class="nav-desc">${desc}</span></span></button>`).join("")}</div>`).join("");
-      $("quickTools").innerHTML = quickToolIds.map((id) => {
-        const [, toolId,, label, desc] = tools.find((t) => t[1] === id);
-        return `<button class="quick-tool" data-open="${toolId}"><strong>${label}</strong><span>${desc}</span></button>`;
-      }).join("");
       document.addEventListener("click", (e) => {
         const open = e.target.closest("[data-open]")?.dataset.open;
         if (open) showTool(open);
@@ -1315,10 +1349,6 @@ graph TD
       $("toolSearch").addEventListener("input", () => {
         const q = $("toolSearch").value.toLowerCase();
         document.querySelectorAll(".nav-link").forEach((b) => {
-          const id = b.dataset.open, sec = $(id);
-          b.classList.toggle("hidden", q && !(`${b.textContent} ${sec.dataset.title}`.toLowerCase().includes(q)));
-        });
-        document.querySelectorAll(".quick-tool").forEach((b) => {
           const id = b.dataset.open, sec = $(id);
           b.classList.toggle("hidden", q && !(`${b.textContent} ${sec.dataset.title}`.toLowerCase().includes(q)));
         });
@@ -1337,8 +1367,23 @@ graph TD
     }
 
     function bind() {
+      $("jsonSample").onclick = () => {
+        $("jsonInput").value = JSON.stringify({
+          service: "utility-tools",
+          offline: true,
+          features: ["json", "jwt", "base64", "qr"],
+          user: { id: 1001, name: "demo-user" },
+          createdAt: new Date().toISOString()
+        }, null, 2);
+        jsonAction("format");
+      };
       $("jsonFormat").onclick = () => jsonAction("format"); $("jsonMinify").onclick = () => jsonAction("minify"); $("jsonSort").onclick = () => jsonAction("sort"); $("jsonUnquote").onclick = () => jsonAction("unquote");
+      $("jwtSample").onclick = () => { $("jwtInput").value = sampleJwt(); parseJwt(); };
       $("jwtParse").onclick = parseJwt;
+      $("b64Sample").onclick = () => {
+        $("base64Input").value = "Utility Tools sample: 日本語もBase64にできます。";
+        $("base64Output").value = b64EncodeText($("base64Input").value);
+      };
       $("b64Encode").onclick = () => $("base64Output").value = b64EncodeText($("base64Input").value);
       $("b64Decode").onclick = () => { try { $("base64Output").value = b64DecodeText($("base64Input").value.trim()); } catch(e) { $("base64Output").value = "Error: " + e.message; } };
       $("b64UrlEncode").onclick = () => $("base64Output").value = b64EncodeText($("base64Input").value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -1348,6 +1393,10 @@ graph TD
         const buf = new Uint8Array(await f.arrayBuffer()); let bin = ""; buf.forEach((b) => bin += String.fromCharCode(b));
         $("base64Output").value = `data:${f.type || "application/octet-stream"};base64,${btoa(bin)}`;
       };
+      $("stringSample").onclick = () => {
+        $("stringInput").value = "Hello Utility Tools! <div class=\"demo\">日本語 sample & escape</div> https://example.com/?q=日本語";
+        $("stringOutput").value = JSON.stringify(caseVariants("hello utility tools sample"), null, 2);
+      };
       $("uuidBtn").onclick = () => $("stringOutput").value = crypto.randomUUID();
       $("urlEnc").onclick = () => $("stringOutput").value = encodeURIComponent($("stringInput").value);
       $("urlDec").onclick = () => { try { $("stringOutput").value = decodeURIComponent($("stringInput").value); } catch(e) { $("stringOutput").value = "Error: " + e.message; } };
@@ -1355,6 +1404,7 @@ graph TD
       $("htmlUnesc").onclick = () => $("stringOutput").value = unescapeHtml($("stringInput").value);
       $("caseTools").onclick = () => $("stringOutput").value = JSON.stringify(caseVariants($("stringInput").value), null, 2);
       $("hashBtn").onclick = async () => $("stringOutput").value = await sha256($("stringInput").value);
+      $("mdSample").onclick = () => { $("mdInput").value = sampleMarkdown(); $("mdPreview").innerHTML = markdownToHtml($("mdInput").value); };
       $("mdInput").addEventListener("input", () => $("mdPreview").innerHTML = markdownToHtml($("mdInput").value));
       $("mdPreview").innerHTML = markdownToHtml($("mdInput").value);
       $("genPassword").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => randomChars(+$("randomLength").value, "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*_-+=")).join("\n");
@@ -1376,7 +1426,9 @@ graph TD
       $("renderIcon").onclick = renderIcon; $("iconText").oninput = renderIcon; $("iconBg").oninput = renderIcon; $("iconFg").oninput = renderIcon; $("iconImage").onchange = renderIcon; $("iconSize").onchange = renderIcon; $("iconFit").onchange = renderIcon;
       $("downloadIcon").onclick = () => $("iconCanvas").toBlob((b) => downloadBlob(b, "icon.png"), "image/png");
       $("downloadFavicon").onclick = async () => downloadBlob(await canvasToIcoBlob($("iconCanvas")), "favicon.ico");
+      $("qrSample").onclick = () => { $("qrInput").value = "https://lirlia.github.io/utility-tools/"; drawQr(); };
       $("makeQr").onclick = drawQr; $("downloadQr").onclick = () => $("qrCanvas").toBlob((b) => downloadBlob(b, "qr.png"), "image/png");
+      $("timeSample").onclick = () => { $("timeInput").value = "2026-04-28T12:00:00+09:00"; $("timeOutput").value = timeReport(new Date($("timeInput").value)); };
       $("timeNow").onclick = () => { const d = new Date(); $("timeInput").value = d.toISOString(); $("timeOutput").value = timeReport(d); };
       $("timeConvert").onclick = () => { const d = new Date($("timeInput").value || Date.now()); $("timeOutput").value = isNaN(d) ? "Invalid date" : timeReport(d); };
       $("epochConvert").onclick = () => { const n = Number($("timeInput").value.trim()); const d = new Date(n > 1e12 ? n : n * 1000); $("timeOutput").value = isNaN(d) ? "Invalid epoch" : timeReport(d); };

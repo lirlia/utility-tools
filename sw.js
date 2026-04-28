@@ -1,7 +1,8 @@
-const CACHE_NAME = "utility-tools-v7";
+const CACHE_NAME = "utility-tools-v11";
 const ASSETS = [
   "./",
   "./index.html",
+  "./ogp.png",
   "./sw.js"
 ];
 

@@ -214,15 +214,15 @@
     }
     textarea {
       resize: vertical;
-      min-height: 18rem;
+      min-height: clamp(28rem, 52vh, 44rem);
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       line-height: 1.48;
     }
-    textarea.tall { min-height: 34rem; }
+    textarea.tall { min-height: clamp(42rem, 72vh, 58rem); }
     output, .output {
       display: block;
       width: 100%;
-      min-height: 18rem;
+      min-height: clamp(28rem, 52vh, 44rem);
       border: 1px solid var(--line);
       background: #fff;
       border-radius: 8px;
@@ -239,13 +239,13 @@
     }
     .row { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; }
     .hint { color: var(--muted); font-size: .82rem; line-height: 1.5; }
-    .mini { min-height: 5rem; }
+    .mini { min-height: 10rem; }
     .preview {
       border: 1px solid var(--line);
       background: #fff;
       border-radius: 8px;
       padding: 1rem;
-      min-height: 34rem;
+      min-height: clamp(42rem, 72vh, 58rem);
       overflow: auto;
       line-height: 1.65;
     }

@@ -534,21 +534,31 @@ graph TD
         </div>
       </section>
 
-      <section id="icon" class="tool" data-title="icon generator favicon image png アイコン">
+      <section id="icon" class="tool" data-title="ico converter favicon image png アイコン 変換">
         <div class="tool-head">
-          <div><h2>アイコン生成</h2><p>文字や画像からPNGアイコンとfavicon.icoを生成します。</p></div>
-          <div class="actions"><button id="downloadIcon">PNG保存</button><button id="downloadFavicon">ICO保存</button></div>
+          <div><h2>画像をICOに変換</h2><p>既存のPNG/JPEG/WebP画像をfavicon.ico形式に変換します。選んだ画像はブラウザ内だけで処理します。</p></div>
+          <div class="actions"><button id="downloadIcon">PNGでも保存</button><button id="downloadFavicon" class="primary">ICO保存</button></div>
         </div>
         <div class="body grid">
           <div class="field">
-            <label for="iconText">文字</label>
-            <input id="iconText" value="UT" maxlength="4">
-            <div class="grid">
-              <input id="iconBg" type="color" value="#0f766e" aria-label="background">
-              <input id="iconFg" type="color" value="#ffffff" aria-label="foreground">
-            </div>
+            <label for="iconImage">変換する画像</label>
             <input id="iconImage" type="file" accept="image/*">
-            <button class="primary" id="renderIcon">生成</button>
+            <div class="grid">
+              <div class="field"><label for="iconSize">ICOサイズ</label><select id="iconSize"><option value="256">256 x 256</option><option value="128">128 x 128</option><option value="64">64 x 64</option><option value="32">32 x 32</option></select></div>
+              <div class="field"><label for="iconFit">配置</label><select id="iconFit"><option value="contain">全体を収める</option><option value="cover">正方形に切り抜く</option></select></div>
+            </div>
+            <details>
+              <summary>画像がない場合の簡易アイコン作成</summary>
+              <div class="field" style="margin-top:.65rem">
+                <label for="iconText">文字</label>
+                <input id="iconText" value="UT" maxlength="4">
+                <div class="grid">
+                  <input id="iconBg" type="color" value="#0f766e" aria-label="background">
+                  <input id="iconFg" type="color" value="#ffffff" aria-label="foreground">
+                </div>
+              </div>
+            </details>
+            <button class="primary" id="renderIcon">プレビュー更新</button>
           </div>
           <div class="field">
             <label>プレビュー</label>
@@ -635,7 +645,7 @@ graph TD
       ["編集", "markdown", "MD", "Markdownエディター", "プレビューと図の簡易表示"],
       ["生成", "random", "乱", "ランダム生成", "パスワード・色・CSV"],
       ["メディア", "media", "画", "画像・動画・音声変換", "画像圧縮と形式変換"],
-      ["メディア", "icon", "像", "アイコン生成", "PNGとfaviconを作成"],
+      ["メディア", "icon", "ICO", "画像をICOに変換", "favicon.icoを作成"],
       ["生成", "qr", "QR", "QRコード生成", "文字列やURLから作成"],
       ["時刻", "time", "時", "時刻変換", "Epochとタイムゾーン"],
       ["安全", "privacy", "守", "データ保護のしくみ", "外部送信なしを確認"]
@@ -845,21 +855,48 @@ graph TD
     }
     const words = "local private static offline engineer utility format encode decode parse convert secure quick sample value token alpha beta gamma delta".split(" ");
     function renderIcon() {
-      const c = $("iconCanvas"), ctx = c.getContext("2d"), size = c.width;
+      const size = Number($("iconSize").value) || 256;
+      const c = $("iconCanvas"), ctx = c.getContext("2d");
+      c.width = size;
+      c.height = size;
       ctx.clearRect(0, 0, size, size);
-      ctx.fillStyle = $("iconBg").value; ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, size, size);
       const file = $("iconImage").files[0];
       if (file && file.type.startsWith("image/")) {
         const img = new Image();
         img.onload = () => {
-          ctx.drawImage(img, 0, 0, size, size);
-          drawIconText(ctx, size);
+          drawImageToSquare(ctx, img, size, $("iconFit").value);
           URL.revokeObjectURL(img.src);
         };
         img.src = URL.createObjectURL(file);
       } else {
+        ctx.fillStyle = $("iconBg").value;
+        ctx.fillRect(0, 0, size, size);
         drawIconText(ctx, size);
       }
+    }
+    function drawImageToSquare(ctx, img, size, fit) {
+      const ir = img.width / img.height;
+      const sr = 1;
+      let sx = 0, sy = 0, sw = img.width, sh = img.height;
+      let dx = 0, dy = 0, dw = size, dh = size;
+      if (fit === "cover") {
+        if (ir > sr) {
+          sw = img.height;
+          sx = (img.width - sw) / 2;
+        } else {
+          sh = img.width;
+          sy = (img.height - sh) / 2;
+        }
+      } else if (ir > sr) {
+        dh = size / ir;
+        dy = (size - dh) / 2;
+      } else {
+        dw = size * ir;
+        dx = (size - dw) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
     }
     function drawIconText(ctx, size) {
       ctx.fillStyle = $("iconFg").value;
@@ -1336,7 +1373,7 @@ graph TD
       $("mediaFile").onchange = () => handleMediaFile($("mediaFile").files[0]);
       $("convertMedia").onclick = convertMedia;
       $("downloadMedia").onclick = () => convertedBlob ? downloadBlob(convertedBlob, convertedName) : toast("先に変換してください");
-      $("renderIcon").onclick = renderIcon; $("iconText").oninput = renderIcon; $("iconBg").oninput = renderIcon; $("iconFg").oninput = renderIcon; $("iconImage").onchange = renderIcon;
+      $("renderIcon").onclick = renderIcon; $("iconText").oninput = renderIcon; $("iconBg").oninput = renderIcon; $("iconFg").oninput = renderIcon; $("iconImage").onchange = renderIcon; $("iconSize").onchange = renderIcon; $("iconFit").onchange = renderIcon;
       $("downloadIcon").onclick = () => $("iconCanvas").toBlob((b) => downloadBlob(b, "icon.png"), "image/png");
       $("downloadFavicon").onclick = async () => downloadBlob(await canvasToIcoBlob($("iconCanvas")), "favicon.ico");
       $("makeQr").onclick = drawQr; $("downloadQr").onclick = () => $("qrCanvas").toBlob((b) => downloadBlob(b, "qr.png"), "image/png");

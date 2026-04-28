@@ -1,9 +1,7 @@
-const CACHE_NAME = "utility-tools-v5";
+const CACHE_NAME = "utility-tools-v7";
 const ASSETS = [
   "./",
   "./index.html",
-  "./markdown_editor.html",
-  "./qr_code_tool.html",
   "./sw.js"
 ];
 

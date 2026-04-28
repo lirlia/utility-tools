@@ -65,9 +65,6 @@
     button.icon { width: 2.35rem; height: 2.35rem; display: inline-grid; place-items: center; padding: 0; }
     a { color: var(--accent); }
     header {
-      position: sticky;
-      top: 0;
-      z-index: 5;
       border-bottom: 1px solid rgba(217, 222, 214, .9);
       background: rgba(247, 247, 242, .92);
       backdrop-filter: blur(14px);
@@ -112,7 +109,7 @@
     .badge.ok { color: #0f766e; background: var(--soft); border-color: #abd6ce; }
     .badge.block { color: #8a3512; background: #fff7ed; border-color: #fed7aa; }
     .layout {
-      max-width: 1440px;
+      max-width: 1680px;
       margin: 0 auto;
       display: grid;
       grid-template-columns: 15.5rem minmax(0, 1fr);
@@ -201,8 +198,9 @@
     .tool-head p { margin: .28rem 0 0; color: var(--muted); line-height: 1.55; font-size: .9rem; }
     .actions { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: flex-end; }
     .body { padding: 1rem; }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    .compact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .compact-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .field { display: grid; gap: .42rem; min-width: 0; }
     label { color: #33423e; font-weight: 650; font-size: .84rem; }
     textarea, input, select {
@@ -216,15 +214,15 @@
     }
     textarea {
       resize: vertical;
-      min-height: 13rem;
+      min-height: 18rem;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       line-height: 1.48;
     }
-    textarea.tall { min-height: 28rem; }
+    textarea.tall { min-height: 34rem; }
     output, .output {
       display: block;
       width: 100%;
-      min-height: 13rem;
+      min-height: 18rem;
       border: 1px solid var(--line);
       background: #fff;
       border-radius: 8px;
@@ -247,7 +245,7 @@
       background: #fff;
       border-radius: 8px;
       padding: 1rem;
-      min-height: 18rem;
+      min-height: 34rem;
       overflow: auto;
       line-height: 1.65;
     }
@@ -313,7 +311,7 @@
         border-color: var(--line);
       }
       .nav-desc { display: none; }
-      .grid, .grid.three { grid-template-columns: 1fr; }
+      .grid, .compact-grid, .compact-grid.three { grid-template-columns: 1fr; }
       .notice { grid-template-columns: 1fr; }
       .tool-head { flex-direction: column; }
       .actions { justify-content: flex-start; }
@@ -494,7 +492,7 @@ graph TD
         <div class="body grid">
           <div class="field">
             <label>設定</label>
-            <div class="grid">
+            <div class="compact-grid">
               <input id="randomLength" type="number" min="1" max="4096" value="32" aria-label="length">
               <input id="randomCount" type="number" min="1" max="200" value="5" aria-label="count">
             </div>
@@ -519,12 +517,12 @@ graph TD
         </div>
         <div class="body">
           <div id="mediaDrop" class="drop"><div><strong>画像・動画・音声ファイルをドロップ</strong><br><span class="hint">または下から選択</span><br><br><input id="mediaFile" type="file" accept="image/*,video/*,audio/*"></div></div>
-          <div class="grid three" style="margin-top:1rem">
+          <div class="compact-grid three" style="margin-top:1rem">
             <div class="field"><label for="mediaFormat">出力形式</label><select id="mediaFormat"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option><option value="image/gif">GIF</option><option value="image/x-icon">ICO</option><option value="same">動画/音声: 拡張子だけ変更</option></select></div>
             <div class="field"><label for="mediaQuality">品質</label><input id="mediaQuality" type="range" min="0.1" max="1" step="0.05" value="0.82"></div>
             <div class="field"><label for="mediaWidth">最大幅(px)</label><input id="mediaWidth" type="number" min="16" value="1600"></div>
           </div>
-          <div class="grid" style="margin-top:1rem">
+          <div class="compact-grid" style="margin-top:1rem">
             <div class="field"><label for="gifFps">GIF FPS</label><input id="gifFps" type="number" min="1" max="15" value="8"></div>
             <div class="field"><label for="gifSeconds">GIF最大秒数</label><input id="gifSeconds" type="number" min="1" max="15" value="4"></div>
           </div>
@@ -542,7 +540,7 @@ graph TD
           <div class="field">
             <label for="iconImage">変換する画像</label>
             <input id="iconImage" type="file" accept="image/*">
-            <div class="grid">
+            <div class="compact-grid">
               <div class="field"><label for="iconSize">ICOサイズ</label><select id="iconSize"><option value="256">256 x 256</option><option value="128">128 x 128</option><option value="64">64 x 64</option><option value="32">32 x 32</option></select></div>
               <div class="field"><label for="iconFit">配置</label><select id="iconFit"><option value="contain">全体を収める</option><option value="cover">正方形に切り抜く</option></select></div>
             </div>
@@ -551,7 +549,7 @@ graph TD
               <div class="field" style="margin-top:.65rem">
                 <label for="iconText">文字</label>
                 <input id="iconText" value="UT" maxlength="4">
-                <div class="grid">
+                <div class="compact-grid">
                   <input id="iconBg" type="color" value="#0f766e" aria-label="background">
                   <input id="iconFg" type="color" value="#ffffff" aria-label="foreground">
                 </div>
@@ -594,7 +592,7 @@ graph TD
           <div class="field">
             <label for="timeInput">日時またはEpoch</label>
             <input id="timeInput" placeholder="2026-04-28T12:00:00 or 1777354800">
-            <div class="grid">
+            <div class="compact-grid">
               <select id="fromTz"></select>
               <select id="toTz"></select>
             </div>

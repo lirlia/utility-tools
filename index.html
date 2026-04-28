@@ -1,42 +1,1374 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Utility Tools</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="theme-color" content="#0f766e">
+  <title>Utility Tools</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f7f2;
+      --panel: #ffffff;
+      --ink: #17211f;
+      --muted: #65706c;
+      --line: #d9ded6;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --danger: #b91c1c;
+      --code: #101827;
+      --code-ink: #e5f2ef;
+      --soft: #e7f3ef;
+      --shadow: 0 14px 40px rgba(20, 32, 28, .08);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(15, 118, 110, .08), transparent 24rem),
+        var(--bg);
+      color: var(--ink);
+    }
+    button, input, textarea, select { font: inherit; }
+    button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: .58rem .78rem;
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    button:hover { transform: translateY(-1px); border-color: #99aaa3; }
+    button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    button.warn { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+    button.icon { width: 2.35rem; height: 2.35rem; display: inline-grid; place-items: center; padding: 0; }
+    a { color: var(--accent); }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid rgba(217, 222, 214, .9);
+      background: rgba(247, 247, 242, .92);
+      backdrop-filter: blur(14px);
+    }
+    .topbar {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: .9rem 1rem;
+      display: grid;
+      grid-template-columns: minmax(13rem, 1fr) minmax(18rem, 30rem) auto;
+      gap: .75rem;
+      align-items: center;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+    .logo {
+      width: 2.55rem; height: 2.55rem; border-radius: 8px;
+      display: grid; place-items: center; color: #fff; font-weight: 800;
+      background: conic-gradient(from 210deg, #0f766e, #2563eb, #b45309, #0f766e);
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+    .brand h1 { font-size: 1.05rem; margin: 0; line-height: 1.05; }
+    .brand p { margin: .18rem 0 0; font-size: .78rem; color: var(--muted); }
+    .search {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: .68rem .8rem;
+    }
+    .status-strip { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .badge {
+      display: inline-flex; align-items: center; gap: .38rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: .42rem .62rem;
+      background: #fff;
+      color: var(--muted);
+      font-size: .8rem;
+      white-space: nowrap;
+    }
+    .badge.ok { color: #0f766e; background: var(--soft); border-color: #abd6ce; }
+    .badge.block { color: #8a3512; background: #fff7ed; border-color: #fed7aa; }
+    .layout {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 15.5rem minmax(0, 1fr);
+      gap: 1rem;
+      padding: 1rem;
+    }
+    nav {
+      position: sticky;
+      top: 5rem;
+      align-self: start;
+      max-height: calc(100vh - 6rem);
+      overflow: auto;
+      padding-right: .25rem;
+    }
+    .nav-group { margin-bottom: 1rem; }
+    .nav-group strong { display: block; font-size: .72rem; color: var(--muted); margin: .2rem .45rem .4rem; }
+    .nav-link {
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: .58rem;
+      margin: .18rem 0;
+      background: transparent;
+      border-color: transparent;
+      color: #2d3935;
+    }
+    .nav-link.active { background: #fff; border-color: var(--line); box-shadow: 0 4px 16px rgba(20, 32, 28, .06); }
+    .nav-icon {
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid #c6d8d3;
+      border-radius: 8px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--accent);
+      background: var(--soft);
+      font-size: .78rem;
+      font-weight: 750;
+      flex: 0 0 auto;
+    }
+    .nav-text { min-width: 0; display: grid; gap: .08rem; }
+    .nav-label { font-weight: 750; }
+    .nav-desc {
+      display: block;
+      color: var(--muted);
+      font-size: .72rem;
+      line-height: 1.25;
+      white-space: normal;
+    }
+    main { min-width: 0; }
+    .notice {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: .8rem;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+      padding: .85rem;
+      margin-bottom: 1rem;
+    }
+    .notice h2 { font-size: .98rem; margin: 0 0 .2rem; }
+    .notice p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.55; }
+    .quick-tools {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .65rem;
+      margin-bottom: 1rem;
+    }
+    .quick-tool {
+      min-height: 4.6rem;
+      text-align: left;
+      display: grid;
+      align-content: start;
+      gap: .24rem;
+      background: #fff;
+      border-color: var(--line);
+      box-shadow: 0 8px 24px rgba(20, 32, 28, .05);
+    }
+    .quick-tool strong { font-size: .93rem; }
+    .quick-tool span { color: var(--muted); font-size: .76rem; line-height: 1.35; }
+    .tool {
+      display: none;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    .tool.active { display: block; }
+    .tool-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: start;
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
+      background: #fcfcf9;
+    }
+    .tool h2 { margin: 0; font-size: 1.25rem; }
+    .tool-head p { margin: .28rem 0 0; color: var(--muted); line-height: 1.55; font-size: .9rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: flex-end; }
+    .body { padding: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .field { display: grid; gap: .42rem; min-width: 0; }
+    label { color: #33423e; font-weight: 650; font-size: .84rem; }
+    textarea, input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: .72rem .78rem;
+      min-width: 0;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 13rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      line-height: 1.48;
+    }
+    textarea.tall { min-height: 28rem; }
+    output, .output {
+      display: block;
+      width: 100%;
+      min-height: 13rem;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: .78rem;
+      overflow: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .codebox {
+      background: var(--code);
+      color: var(--code-ink);
+      border-color: #283548;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; }
+    .hint { color: var(--muted); font-size: .82rem; line-height: 1.5; }
+    .mini { min-height: 5rem; }
+    .preview {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 18rem;
+      overflow: auto;
+      line-height: 1.65;
+    }
+    .preview pre { background: var(--code); color: var(--code-ink); padding: .8rem; border-radius: 8px; overflow: auto; }
+    .preview code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .preview table { width: 100%; border-collapse: collapse; }
+    .preview th, .preview td { border: 1px solid var(--line); padding: .42rem; }
+    .drop {
+      border: 1px dashed #9aa8a4;
+      border-radius: 8px;
+      background: #fbfcfa;
+      min-height: 9rem;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 1rem;
+    }
+    .drop.drag { border-color: var(--accent); background: var(--soft); }
+    canvas, video, audio, img.preview-media { max-width: 100%; border-radius: 8px; border: 1px solid var(--line); background: #fff; }
+    .swatches { display: flex; flex-wrap: wrap; gap: .45rem; }
+    .swatch { width: 2rem; height: 2rem; border-radius: 8px; border: 1px solid var(--line); }
+    .kv { display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: .45rem .8rem; font-size: .88rem; }
+    .kv div:nth-child(odd) { color: var(--muted); }
+    .log {
+      max-height: 12rem;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: .6rem;
+      background: #fff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .78rem;
+    }
+    .toast {
+      position: fixed; right: 1rem; bottom: 1rem; z-index: 10;
+      background: #14201c; color: #fff; border-radius: 8px; padding: .72rem .9rem;
+      opacity: 0; transform: translateY(.5rem); transition: .18s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .hidden { display: none !important; }
+    @media (max-width: 980px) {
+      .topbar { grid-template-columns: 1fr; }
+      .status-strip { justify-content: flex-start; }
+      .layout { grid-template-columns: 1fr; }
+      nav {
+        position: static;
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .45rem;
+      }
+      .nav-group { display: contents; margin: 0; }
+      .nav-group strong { display: none; }
+      .nav-link {
+        width: 100%;
+        min-height: 3.1rem;
+        margin: 0;
+        white-space: normal;
+        background: #fff;
+        border-color: var(--line);
+      }
+      .nav-desc { display: none; }
+      .quick-tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid, .grid.three { grid-template-columns: 1fr; }
+      .notice { grid-template-columns: 1fr; }
+      .tool-head { flex-direction: column; }
+      .actions { justify-content: flex-start; }
+      .kv { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      nav, .quick-tools { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-<body class="bg-gray-50">
-    <header class="bg-blue-600 text-white py-4 shadow-md w-full text-center">
-        <h1 class="text-4xl">Utility Tools</h1>
-    </header>
-    <main class="flex-grow flex flex-col items-center">
-        <p class="mt-6 text-lg text-gray-800">Explore our collection of online tools:</p>
-        <ul class="space-y-4 mt-8">
-            <li>
-                <a href="markdown_editor.html" class="text-blue-500 underline hover:text-blue-700">
-                    Markdown & Mermaid Editor
-                </a>
-            </li>
-            <li>
-                <a href="qr_code_tool.html" class="text-blue-500 underline hover:text-blue-700">
-                    QR Code Generator
-                </a>
-            </li>
-        </ul>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">UT</div>
+      <div>
+        <h1>Utility Tools</h1>
+          <p>ブラウザだけで使える開発者向けツール</p>
+      </div>
+      </div>
+      <input id="toolSearch" class="search" placeholder="使いたい機能を検索: JSON、JWT、QR、画像、時刻..." autocomplete="off">
+      <div class="status-strip">
+        <span id="offlineBadge" class="badge ok">● オフライン対応</span>
+        <span id="networkBadge" class="badge block">● 外部送信なし</span>
+        <span id="swBadge" class="badge">保存状態を確認中</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav id="nav"></nav>
+    <main>
+      <section class="notice">
+        <div>
+          <h2>入力したデータはアップロードされません</h2>
+          <p>貼り付けた文字や選んだファイルは、このブラウザの中だけで処理します。外部サービスへ送る処理は入れておらず、通信しようとした場合もページ内で止めて、下の画面に記録します。</p>
+        </div>
+        <div class="actions">
+          <button class="primary" data-open="privacy">安全のしくみを見る</button>
+          <button id="selfTestBtn">通信ブロックを試す</button>
+        </div>
+      </section>
+
+      <section id="quickTools" class="quick-tools" aria-label="よく使う機能"></section>
+
+      <section id="json" class="tool" data-title="JSON Formatter JSON きれい パース まとめる minify">
+        <div class="tool-head">
+          <div><h2>JSON整形</h2><p>JSONを読みやすく整形、1行に圧縮、キー順に並び替えできます。</p></div>
+          <div class="actions">
+            <button data-copy="jsonOutput">コピー</button>
+            <button data-clear="jsonInput jsonOutput">クリア</button>
+          </div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label for="jsonInput">入力</label>
+            <textarea id="jsonInput" placeholder='{"hello":"world"}'></textarea>
+            <div class="row">
+              <button class="primary" id="jsonFormat">整形</button>
+              <button id="jsonMinify">圧縮</button>
+              <button id="jsonSort">キーソート</button>
+              <button id="jsonUnquote">JSON文字列を展開</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="jsonOutput">結果</label>
+            <textarea id="jsonOutput" class="codebox" readonly></textarea>
+            <div id="jsonMeta" class="hint"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="jwt" class="tool" data-title="JWT Jot parse token decode header payload">
+        <div class="tool-head">
+          <div><h2>JWT解析</h2><p>JWTのヘッダーとペイロードをこの画面だけで読みやすく表示します。署名検証は行いません。</p></div>
+          <div class="actions"><button data-copy="jwtOutput">コピー</button><button data-clear="jwtInput jwtOutput">クリア</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label for="jwtInput">JWT</label>
+            <textarea id="jwtInput" placeholder="eyJhbGciOi..."></textarea>
+            <button class="primary" id="jwtParse">パース</button>
+          </div>
+          <div class="field">
+            <label for="jwtOutput">解析結果</label>
+            <textarea id="jwtOutput" class="codebox" readonly></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section id="base64" class="tool" data-title="Base64 encode decode">
+        <div class="tool-head">
+          <div><h2>Base64変換</h2><p>テキストやファイルをBase64へ変換、Base64から元の文字列へ戻します。</p></div>
+          <div class="actions"><button data-copy="base64Output">コピー</button><button data-clear="base64Input base64Output">クリア</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label for="base64Input">入力</label>
+            <textarea id="base64Input"></textarea>
+            <div class="row">
+              <button class="primary" id="b64Encode">エンコード</button>
+              <button id="b64Decode">デコード</button>
+              <button id="b64UrlEncode">URL-safe</button>
+              <button id="b64UrlDecode">URL-safe解除</button>
+            </div>
+            <input id="b64File" type="file">
+          </div>
+          <div class="field">
+            <label for="base64Output">結果</label>
+            <textarea id="base64Output" class="codebox" readonly></textarea>
+            <a id="b64Download" class="hidden" download="decoded.bin">decoded.bin</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="strings" class="tool" data-title="UUID UIディ URL encode HTML escape text string">
+        <div class="tool-head">
+          <div><h2>文字列変換</h2><p>UUID生成、URLエンコード、HTMLエスケープ、ケース変換、SHA-256ハッシュ。</p></div>
+          <div class="actions"><button data-copy="stringOutput">コピー</button><button data-clear="stringInput stringOutput">クリア</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label for="stringInput">入力</label>
+            <textarea id="stringInput"></textarea>
+            <div class="row">
+              <button class="primary" id="uuidBtn">UUID v4</button>
+              <button id="urlEnc">URL encode</button>
+              <button id="urlDec">URL decode</button>
+              <button id="htmlEsc">HTML escape</button>
+              <button id="htmlUnesc">HTML unescape</button>
+              <button id="caseTools">Case変換</button>
+              <button id="hashBtn">SHA-256</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="stringOutput">結果</label>
+            <textarea id="stringOutput" class="codebox" readonly></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section id="markdown" class="tool" data-title="Markdown editor Mermaid preview マークダウン エディター">
+        <div class="tool-head">
+          <div><h2>Markdownエディター</h2><p>Markdownのプレビュー、コードブロック、表、Mermaid風フローチャートの簡易表示。</p></div>
+          <div class="actions"><button data-copy="mdInput">Markdownコピー</button><button data-clear="mdInput mdPreview">クリア</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label for="mdInput">Markdown</label>
+            <textarea id="mdInput" class="tall"># Utility Tools
+
+```mermaid
+graph TD
+  A[Paste data] --> B[Local processing]
+  B --> C[No upload]
+```
+
+| Tool | Status |
+| --- | --- |
+| JSON | ready |
+| QR | ready |
+</textarea>
+          </div>
+          <div class="field">
+            <label>プレビュー</label>
+            <div id="mdPreview" class="preview"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="random" class="tool" data-title="random generator password token color lorem">
+        <div class="tool-head">
+          <div><h2>ランダム生成</h2><p>パスワード、トークン、数値、色、Lorem、CSVサンプルを生成します。</p></div>
+          <div class="actions"><button data-copy="randomOutput">コピー</button><button data-clear="randomOutput">クリア</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label>設定</label>
+            <div class="grid">
+              <input id="randomLength" type="number" min="1" max="4096" value="32" aria-label="length">
+              <input id="randomCount" type="number" min="1" max="200" value="5" aria-label="count">
+            </div>
+            <div class="row">
+              <button class="primary" id="genPassword">パスワード</button>
+              <button id="genToken">Token</button>
+              <button id="genNumber">数値</button>
+              <button id="genColor">色</button>
+              <button id="genLorem">Lorem</button>
+              <button id="genCsv">CSV</button>
+            </div>
+            <div id="colorSwatches" class="swatches"></div>
+          </div>
+          <div class="field"><label for="randomOutput">結果</label><textarea id="randomOutput" class="codebox" readonly></textarea></div>
+        </div>
+      </section>
+
+      <section id="media" class="tool" data-title="image video audio convert extension compress 画像 動画 サウンド 圧縮">
+        <div class="tool-head">
+          <div><h2>画像・動画・音声変換</h2><p>画像はPNG/JPEG/WebP/GIF/ICOへ変換できます。動画は短いGIFへの変換と、ファイル情報の確認に対応します。</p></div>
+          <div class="actions"><button data-clear="mediaResult">クリア</button></div>
+        </div>
+        <div class="body">
+          <div id="mediaDrop" class="drop"><div><strong>画像・動画・音声ファイルをドロップ</strong><br><span class="hint">または下から選択</span><br><br><input id="mediaFile" type="file" accept="image/*,video/*,audio/*"></div></div>
+          <div class="grid three" style="margin-top:1rem">
+            <div class="field"><label for="mediaFormat">出力形式</label><select id="mediaFormat"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option><option value="image/gif">GIF</option><option value="image/x-icon">ICO</option><option value="same">動画/音声: 拡張子だけ変更</option></select></div>
+            <div class="field"><label for="mediaQuality">品質</label><input id="mediaQuality" type="range" min="0.1" max="1" step="0.05" value="0.82"></div>
+            <div class="field"><label for="mediaWidth">最大幅(px)</label><input id="mediaWidth" type="number" min="16" value="1600"></div>
+          </div>
+          <div class="grid" style="margin-top:1rem">
+            <div class="field"><label for="gifFps">GIF FPS</label><input id="gifFps" type="number" min="1" max="15" value="8"></div>
+            <div class="field"><label for="gifSeconds">GIF最大秒数</label><input id="gifSeconds" type="number" min="1" max="15" value="4"></div>
+          </div>
+          <div class="row" style="margin-top:1rem"><button class="primary" id="convertMedia">変換/圧縮</button><button id="downloadMedia">ダウンロード</button></div>
+          <div id="mediaResult" class="output" style="margin-top:1rem"></div>
+        </div>
+      </section>
+
+      <section id="icon" class="tool" data-title="icon generator favicon image png アイコン">
+        <div class="tool-head">
+          <div><h2>アイコン生成</h2><p>文字や画像からPNGアイコンとfavicon.icoを生成します。</p></div>
+          <div class="actions"><button id="downloadIcon">PNG保存</button><button id="downloadFavicon">ICO保存</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label for="iconText">文字</label>
+            <input id="iconText" value="UT" maxlength="4">
+            <div class="grid">
+              <input id="iconBg" type="color" value="#0f766e" aria-label="background">
+              <input id="iconFg" type="color" value="#ffffff" aria-label="foreground">
+            </div>
+            <input id="iconImage" type="file" accept="image/*">
+            <button class="primary" id="renderIcon">生成</button>
+          </div>
+          <div class="field">
+            <label>プレビュー</label>
+            <canvas id="iconCanvas" width="512" height="512"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="qr" class="tool" data-title="QR code generator qrcode">
+        <div class="tool-head">
+          <div><h2>QRコード生成</h2><p>短いテキストやURLをQRコードに変換します。すべてブラウザ内で生成します。</p></div>
+          <div class="actions"><button id="downloadQr">PNG保存</button><button data-clear="qrInput">クリア</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label for="qrInput">文字列 / URL</label>
+            <textarea id="qrInput" class="mini">https://github.com/lirlia/utility-tools</textarea>
+            <button class="primary" id="makeQr">QR生成</button>
+            <div id="qrInfo" class="hint"></div>
+          </div>
+          <div class="field">
+            <label>QR</label>
+            <canvas id="qrCanvas" width="320" height="320"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="time" class="tool" data-title="timezone epoch unix time converter タイムゾーン">
+        <div class="tool-head">
+          <div><h2>時刻変換</h2><p>エポック秒・ミリ秒と、各タイムゾーンの日時を相互変換します。</p></div>
+          <div class="actions"><button data-copy="timeOutput">コピー</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label for="timeInput">日時またはEpoch</label>
+            <input id="timeInput" placeholder="2026-04-28T12:00:00 or 1777354800">
+            <div class="grid">
+              <select id="fromTz"></select>
+              <select id="toTz"></select>
+            </div>
+            <div class="row">
+              <button class="primary" id="timeNow">現在時刻</button>
+              <button id="timeConvert">変換</button>
+              <button id="epochConvert">Epochから変換</button>
+            </div>
+          </div>
+          <div class="field"><label for="timeOutput">結果</label><textarea id="timeOutput" class="codebox" readonly></textarea></div>
+        </div>
+      </section>
+
+      <section id="privacy" class="tool" data-title="privacy offline proof network upload block">
+        <div class="tool-head">
+          <div><h2>データ保護のしくみ</h2><p>入力内容を外へ送らないための状態と、通信を止めた記録を確認できます。</p></div>
+          <div class="actions"><button id="testNetwork">外部通信を試して止める</button><button id="clearLog">ログ消去</button></div>
+        </div>
+        <div class="body grid">
+          <div class="field">
+            <label>現在の状態</label>
+            <div class="output kv" id="proofBox"></div>
+          </div>
+          <div class="field">
+            <label>止めた通信の記録</label>
+            <div id="networkLog" class="log"></div>
+          </div>
+        </div>
+      </section>
     </main>
-    <footer class="bg-gray-800 text-white py-4 text-center w-full">
-        <p>© 2026 Utility Tools. All rights reserved.</p>
-    </footer>
+  </div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const $ = (id) => document.getElementById(id);
+    const enc = new TextEncoder();
+    const dec = new TextDecoder();
+    const networkLog = [];
+    const tools = [
+      ["整形・解析", "json", "{ }", "JSON整形", "整形・圧縮・キーソート"],
+      ["整形・解析", "jwt", "鍵", "JWT解析", "ヘッダーとペイロードを確認"],
+      ["変換", "base64", "64", "Base64変換", "エンコード・デコード"],
+      ["変換", "strings", "Aa", "文字列変換", "URL・HTML・UUID・ハッシュ"],
+      ["編集", "markdown", "MD", "Markdownエディター", "プレビューと図の簡易表示"],
+      ["生成", "random", "乱", "ランダム生成", "パスワード・色・CSV"],
+      ["メディア", "media", "画", "画像・動画・音声変換", "画像圧縮と形式変換"],
+      ["メディア", "icon", "像", "アイコン生成", "PNGとfaviconを作成"],
+      ["生成", "qr", "QR", "QRコード生成", "文字列やURLから作成"],
+      ["時刻", "time", "時", "時刻変換", "Epochとタイムゾーン"],
+      ["安全", "privacy", "守", "データ保護のしくみ", "外部送信なしを確認"]
+    ];
+    const quickToolIds = ["json", "jwt", "base64", "strings", "qr", "time", "media", "privacy"];
+
+    function toast(message) {
+      const t = $("toast");
+      t.textContent = message;
+      t.classList.add("show");
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => t.classList.remove("show"), 1700);
+    }
+
+    function logNetwork(type, target) {
+      const row = `${new Date().toLocaleTimeString()} ${type}: ${target}`;
+      networkLog.unshift(row);
+      renderNetworkLog();
+    }
+
+    function installNetworkGuards() {
+      const blocked = (type, target) => {
+        logNetwork(type, target);
+        throw new Error(`Network disabled by Utility Tools privacy guard: ${type}`);
+      };
+      window.fetch = (...args) => Promise.reject(blocked("fetch", String(args[0])));
+      window.XMLHttpRequest = function() { blocked("XMLHttpRequest", "constructor"); };
+      window.WebSocket = function(url) { blocked("WebSocket", String(url)); };
+      navigator.sendBeacon = (url) => { logNetwork("sendBeacon", String(url)); return false; };
+    }
+
+    function renderNetworkLog() {
+      $("networkLog").textContent = networkLog.length ? networkLog.join("\n") : "このページを開いてから、外部通信の試行はありません。";
+      $("networkBadge").textContent = `● 外部送信なし (${networkLog.length})`;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function unescapeHtml(s) {
+      const box = document.createElement("textarea");
+      box.innerHTML = s;
+      return box.value;
+    }
+    function downloadBlob(blob, name) {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    function copyText(id) {
+      const el = $(id);
+      const text = "value" in el ? el.value : el.textContent;
+      navigator.clipboard?.writeText(text).then(() => toast("コピーしました"), () => {
+        const tmp = document.createElement("textarea");
+        tmp.value = text; document.body.appendChild(tmp); tmp.select(); document.execCommand("copy"); tmp.remove(); toast("コピーしました");
+      });
+    }
+    function sortKeys(value) {
+      if (Array.isArray(value)) return value.map(sortKeys);
+      if (value && typeof value === "object") {
+        return Object.fromEntries(Object.keys(value).sort().map((k) => [k, sortKeys(value[k])]));
+      }
+      return value;
+    }
+    function jsonAction(mode) {
+      try {
+        let src = $("jsonInput").value.trim();
+        let value = JSON.parse(src);
+        if (mode === "unquote" && typeof value === "string") value = JSON.parse(value);
+        if (mode === "sort") value = sortKeys(value);
+        $("jsonOutput").value = mode === "minify" ? JSON.stringify(value) : JSON.stringify(value, null, 2);
+        const bytes = enc.encode($("jsonOutput").value).length;
+        $("jsonMeta").textContent = `OK: ${Array.isArray(value) ? "array" : typeof value}, ${bytes.toLocaleString()} bytes`;
+      } catch (e) {
+        $("jsonOutput").value = `Error: ${e.message}`;
+        $("jsonMeta").textContent = "Invalid JSON";
+      }
+    }
+    function b64UrlToB64(s) {
+      s = s.replace(/-/g, "+").replace(/_/g, "/");
+      return s + "=".repeat((4 - s.length % 4) % 4);
+    }
+    function b64EncodeText(s) {
+      let bin = "";
+      for (const b of enc.encode(s)) bin += String.fromCharCode(b);
+      return btoa(bin);
+    }
+    function b64DecodeText(s) {
+      const bin = atob(s);
+      return dec.decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
+    }
+    function parseJwt() {
+      try {
+        const parts = $("jwtInput").value.trim().split(".");
+        if (parts.length < 2) throw new Error("JWT must have at least header.payload");
+        const header = JSON.parse(b64DecodeText(b64UrlToB64(parts[0])));
+        const payload = JSON.parse(b64DecodeText(b64UrlToB64(parts[1])));
+        $("jwtOutput").value = JSON.stringify({ header, payload, signature: parts[2] ? `${parts[2].slice(0, 16)}...` : null }, null, 2);
+      } catch (e) {
+        $("jwtOutput").value = `Error: ${e.message}`;
+      }
+    }
+    async function sha256(s) {
+      const hash = await crypto.subtle.digest("SHA-256", enc.encode(s));
+      return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+    function caseVariants(s) {
+      const words = String(s).trim().split(/[^A-Za-z0-9]+/).filter(Boolean);
+      const cap = (x) => x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase();
+      return {
+        original: s,
+        lower: s.toLowerCase(),
+        upper: s.toUpperCase(),
+        camel: words.map((w, i) => i ? cap(w) : w.toLowerCase()).join(""),
+        pascal: words.map(cap).join(""),
+        snake: words.map((w) => w.toLowerCase()).join("_"),
+        kebab: words.map((w) => w.toLowerCase()).join("-")
+      };
+    }
+
+    function markdownToHtml(src) {
+      const lines = src.replace(/\r\n/g, "\n").split("\n");
+      let html = "", i = 0, inList = false;
+      const closeList = () => { if (inList) { html += "</ul>"; inList = false; } };
+      while (i < lines.length) {
+        const line = lines[i];
+        const fence = line.match(/^```(\w*)/);
+        if (fence) {
+          closeList();
+          const lang = fence[1].toLowerCase();
+          const buf = [];
+          i++;
+          while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
+          if (lang === "mermaid") html += renderMermaid(buf.join("\n"));
+          else html += `<pre><code>${escapeHtml(buf.join("\n"))}</code></pre>`;
+        } else if (/^\|.+\|$/.test(line) && /^\|?[\s:-]+\|/.test(lines[i + 1] || "")) {
+          closeList();
+          const rows = [];
+          while (i < lines.length && /^\|.+\|$/.test(lines[i])) rows.push(lines[i++]);
+          const cells = rows.map((r) => r.replace(/^\||\|$/g, "").split("|").map((c) => inlineMd(c.trim())));
+          html += "<table><thead><tr>" + cells[0].map((c) => `<th>${c}</th>`).join("") + "</tr></thead><tbody>";
+          for (const row of cells.slice(2)) html += "<tr>" + row.map((c) => `<td>${c}</td>`).join("") + "</tr>";
+          html += "</tbody></table>";
+          continue;
+        } else if (/^#{1,6}\s/.test(line)) {
+          closeList();
+          const n = line.match(/^#+/)[0].length;
+          html += `<h${n}>${inlineMd(line.slice(n).trim())}</h${n}>`;
+        } else if (/^\s*[-*]\s+/.test(line)) {
+          if (!inList) { html += "<ul>"; inList = true; }
+          html += `<li>${inlineMd(line.replace(/^\s*[-*]\s+/, ""))}</li>`;
+        } else if (line.trim() === "") {
+          closeList();
+        } else {
+          closeList();
+          html += `<p>${inlineMd(line)}</p>`;
+        }
+        i++;
+      }
+      closeList();
+      return html;
+    }
+    function inlineMd(s) {
+      return escapeHtml(s)
+        .replace(/`([^`]+)`/g, "<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" rel="noopener noreferrer">$1</a>');
+    }
+    function renderMermaid(src) {
+      const dir = /graph\s+LR/i.test(src) ? "LR" : "TD";
+      const edgeRe = /([A-Za-z0-9_]+)(?:\[([^\]]+)\])?\s*--(?:>|)\s*(?:\|([^|]+)\|)?\s*([A-Za-z0-9_]+)(?:\[([^\]]+)\])?/g;
+      const nodes = new Map(), edges = [];
+      let m;
+      while ((m = edgeRe.exec(src))) {
+        nodes.set(m[1], m[2] || m[1]); nodes.set(m[4], m[5] || m[4]);
+        edges.push([m[1], m[4], m[3] || ""]);
+      }
+      if (!nodes.size) return `<pre><code>${escapeHtml(src)}</code></pre>`;
+      const items = [...nodes.entries()];
+      const w = dir === "LR" ? Math.max(460, items.length * 150) : 520;
+      const h = dir === "LR" ? 180 : Math.max(220, items.length * 90);
+      const pos = new Map(items.map(([id], idx) => [id, dir === "LR" ? [70 + idx * 140, 80] : [260, 50 + idx * 80]]));
+      let svg = `<svg viewBox="0 0 ${w} ${h}" role="img" style="max-width:100%;height:auto;border:1px solid #d9ded6;border-radius:8px;background:#fff"><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0f766e"/></marker></defs>`;
+      for (const [a, b, label] of edges) {
+        const [x1, y1] = pos.get(a), [x2, y2] = pos.get(b);
+        svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/>`;
+        if (label) svg += `<text x="${(x1+x2)/2}" y="${(y1+y2)/2-8}" text-anchor="middle" font-size="12" fill="#33423e">${escapeHtml(label)}</text>`;
+      }
+      for (const [id, label] of items) {
+        const [x, y] = pos.get(id);
+        svg += `<rect x="${x-48}" y="${y-20}" width="96" height="40" rx="8" fill="#e7f3ef" stroke="#0f766e"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="13" fill="#17211f">${escapeHtml(label)}</text>`;
+      }
+      return svg + "</svg>";
+    }
+
+    function randomBytes(n) {
+      const arr = new Uint8Array(n);
+      crypto.getRandomValues(arr);
+      return arr;
+    }
+    function randomChars(length, alphabet) {
+      const bytes = randomBytes(length);
+      return [...bytes].map((b) => alphabet[b % alphabet.length]).join("");
+    }
+    const words = "local private static offline engineer utility format encode decode parse convert secure quick sample value token alpha beta gamma delta".split(" ");
+    function renderIcon() {
+      const c = $("iconCanvas"), ctx = c.getContext("2d"), size = c.width;
+      ctx.clearRect(0, 0, size, size);
+      ctx.fillStyle = $("iconBg").value; ctx.fillRect(0, 0, size, size);
+      const file = $("iconImage").files[0];
+      if (file && file.type.startsWith("image/")) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, size, size);
+          drawIconText(ctx, size);
+          URL.revokeObjectURL(img.src);
+        };
+        img.src = URL.createObjectURL(file);
+      } else {
+        drawIconText(ctx, size);
+      }
+    }
+    function drawIconText(ctx, size) {
+      ctx.fillStyle = $("iconFg").value;
+      ctx.font = `800 ${Math.max(90, 220 - $("iconText").value.length * 20)}px system-ui`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText($("iconText").value || "UT", size / 2, size / 2 + 8);
+    }
+    function canvasToBlob(canvas, type, quality) {
+      return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+    }
+    function blobToArrayBuffer(blob) {
+      return blob.arrayBuffer();
+    }
+    async function canvasToIcoBlob(canvas) {
+      const png = await canvasToBlob(canvas, "image/png");
+      const pngBytes = new Uint8Array(await blobToArrayBuffer(png));
+      const header = new Uint8Array(22);
+      const view = new DataView(header.buffer);
+      view.setUint16(0, 0, true);
+      view.setUint16(2, 1, true);
+      view.setUint16(4, 1, true);
+      header[6] = canvas.width >= 256 ? 0 : canvas.width;
+      header[7] = canvas.height >= 256 ? 0 : canvas.height;
+      header[8] = 0;
+      header[9] = 0;
+      view.setUint16(10, 1, true);
+      view.setUint16(12, 32, true);
+      view.setUint32(14, pngBytes.length, true);
+      view.setUint32(18, 22, true);
+      return new Blob([header, pngBytes], { type: "image/x-icon" });
+    }
+
+    const gifPalette = (() => {
+      const p = [];
+      for (let r = 0; r < 8; r++) for (let g = 0; g < 8; g++) for (let b = 0; b < 4; b++) {
+        p.push(Math.round(r * 255 / 7), Math.round(g * 255 / 7), Math.round(b * 255 / 3));
+      }
+      return p;
+    })();
+    function gifIndex(r, g, b) {
+      return ((r >> 5) << 5) | ((g >> 5) << 2) | (b >> 6);
+    }
+    function u16(n) { return [n & 255, (n >> 8) & 255]; }
+    function asciiBytes(s) { return [...s].map((c) => c.charCodeAt(0)); }
+    function pushSubBlocks(out, bytes) {
+      for (let i = 0; i < bytes.length; i += 255) {
+        const chunk = bytes.slice(i, i + 255);
+        out.push(chunk.length, ...chunk);
+      }
+      out.push(0);
+    }
+    function lzwGif(indices, minCodeSize = 8) {
+      const clear = 1 << minCodeSize, end = clear + 1;
+      let codeSize = minCodeSize + 1, nextCode = end + 1;
+      let dict = new Map();
+      const reset = () => {
+        dict = new Map();
+        for (let i = 0; i < clear; i++) dict.set(String(i), i);
+        codeSize = minCodeSize + 1;
+        nextCode = end + 1;
+      };
+      const out = [];
+      let cur = 0, bits = 0;
+      const write = (code) => {
+        cur |= code << bits;
+        bits += codeSize;
+        while (bits >= 8) {
+          out.push(cur & 255);
+          cur >>= 8;
+          bits -= 8;
+        }
+      };
+      reset();
+      write(clear);
+      let phrase = String(indices[0] || 0);
+      for (let i = 1; i < indices.length; i++) {
+        const k = indices[i], combo = phrase + "," + k;
+        if (dict.has(combo)) {
+          phrase = combo;
+        } else {
+          write(dict.get(phrase));
+          if (nextCode < 4096) {
+            dict.set(combo, nextCode++);
+            if (nextCode === (1 << codeSize) && codeSize < 12) codeSize++;
+          } else {
+            write(clear);
+            reset();
+          }
+          phrase = String(k);
+        }
+      }
+      write(dict.get(phrase));
+      write(end);
+      if (bits > 0) out.push(cur & 255);
+      return out;
+    }
+    function canvasFrameToGifIndices(canvas) {
+      const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+      const indices = new Uint8Array(canvas.width * canvas.height);
+      for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+        const a = data[i + 3] / 255;
+        const r = Math.round(data[i] * a + 255 * (1 - a));
+        const g = Math.round(data[i + 1] * a + 255 * (1 - a));
+        const b = Math.round(data[i + 2] * a + 255 * (1 - a));
+        indices[j] = gifIndex(r, g, b);
+      }
+      return indices;
+    }
+    function encodeGif(frames, width, height, delayCs) {
+      const out = [];
+      out.push(...asciiBytes("GIF89a"), ...u16(width), ...u16(height), 0xf7, 0, 0, ...gifPalette);
+      out.push(0x21, 0xff, 0x0b, ...asciiBytes("NETSCAPE2.0"), 0x03, 0x01, 0x00, 0x00, 0x00);
+      for (const indices of frames) {
+        out.push(0x21, 0xf9, 0x04, 0x04, ...u16(delayCs), 0x00, 0x00);
+        out.push(0x2c, 0x00, 0x00, 0x00, 0x00, ...u16(width), ...u16(height), 0x00, 0x08);
+        pushSubBlocks(out, lzwGif(indices, 8));
+      }
+      out.push(0x3b);
+      return new Blob([new Uint8Array(out)], { type: "image/gif" });
+    }
+    function waitForVideoEvent(video, eventName) {
+      return new Promise((resolve, reject) => {
+        const done = () => { cleanup(); resolve(); };
+        const fail = () => { cleanup(); reject(new Error("動画を読み込めませんでした")); };
+        const cleanup = () => {
+          video.removeEventListener(eventName, done);
+          video.removeEventListener("error", fail);
+        };
+        video.addEventListener(eventName, done, { once: true });
+        video.addEventListener("error", fail, { once: true });
+      });
+    }
+    async function videoToGifBlob(file) {
+      const url = URL.createObjectURL(file);
+      const video = document.createElement("video");
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+      video.src = url;
+      await waitForVideoEvent(video, "loadedmetadata");
+      const fps = Math.max(1, Math.min(15, Number($("gifFps").value) || 8));
+      const maxSeconds = Math.max(1, Math.min(15, Number($("gifSeconds").value) || 4));
+      const duration = Math.min(Number.isFinite(video.duration) ? video.duration : maxSeconds, maxSeconds);
+      const maxW = Math.max(32, Number($("mediaWidth").value) || 480);
+      const scale = Math.min(1, maxW / video.videoWidth);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(2, Math.round(video.videoWidth * scale));
+      canvas.height = Math.max(2, Math.round(video.videoHeight * scale));
+      const ctx = canvas.getContext("2d");
+      const frameCount = Math.max(1, Math.min(120, Math.ceil(duration * fps)));
+      const frames = [];
+      for (let i = 0; i < frameCount; i++) {
+        video.currentTime = Math.min(duration, i / fps);
+        await waitForVideoEvent(video, "seeked");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        frames.push(canvasFrameToGifIndices(canvas));
+        $("mediaResult").innerHTML = `<p><strong>GIF生成中:</strong> ${i + 1} / ${frameCount} フレーム</p>`;
+      }
+      URL.revokeObjectURL(url);
+      return { blob: encodeGif(frames, canvas.width, canvas.height, Math.round(100 / fps)), width: canvas.width, height: canvas.height, frames: frameCount };
+    }
+
+    let currentMedia = null, convertedBlob = null, convertedName = "converted.bin";
+    function handleMediaFile(file) {
+      currentMedia = file; convertedBlob = null;
+      $("mediaResult").innerHTML = `<div class="kv"><div>Name</div><div>${escapeHtml(file.name)}</div><div>Type</div><div>${escapeHtml(file.type || "unknown")}</div><div>Size</div><div>${file.size.toLocaleString()} bytes</div></div>`;
+      const url = URL.createObjectURL(file);
+      if (file.type.startsWith("image/")) $("mediaResult").innerHTML += `<p><img class="preview-media" src="${url}" alt=""></p>`;
+      else if (file.type.startsWith("video/")) $("mediaResult").innerHTML += `<p><video src="${url}" controls></video></p>`;
+      else if (file.type.startsWith("audio/")) $("mediaResult").innerHTML += `<p><audio src="${url}" controls></audio></p>`;
+    }
+    async function convertMedia() {
+      const file = currentMedia || $("mediaFile").files[0];
+      if (!file) return toast("ファイルを選択してください");
+      if (file.type.startsWith("image/")) {
+        const img = await new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image); image.onerror = reject;
+          image.src = URL.createObjectURL(file);
+        });
+        const maxW = Math.max(16, Number($("mediaWidth").value) || img.width);
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale); canvas.height = Math.round(img.height * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        const type = $("mediaFormat").value === "same" ? "image/png" : $("mediaFormat").value;
+        if (type === "image/x-icon") {
+          convertedBlob = await canvasToIcoBlob(canvas);
+        } else if (type === "image/gif") {
+          convertedBlob = encodeGif([canvasFrameToGifIndices(canvas)], canvas.width, canvas.height, 100);
+        } else {
+          convertedBlob = await canvasToBlob(canvas, type, Number($("mediaQuality").value));
+        }
+        const ext = type === "image/x-icon" ? "ico" : type.split("/")[1].replace("jpeg", "jpg");
+        convertedName = file.name.replace(/\.[^.]+$/, "") + "." + ext;
+        $("mediaResult").innerHTML += `<p><strong>Converted:</strong> ${convertedBlob.size.toLocaleString()} bytes (${type})</p><p><img class="preview-media" src="${URL.createObjectURL(convertedBlob)}" alt=""></p>`;
+      } else if (file.type.startsWith("video/") && $("mediaFormat").value === "image/gif") {
+        $("mediaResult").innerHTML += `<p><strong>GIF生成:</strong> 動画からフレームを取り出しています。長い動画はGIF最大秒数を短めにしてください。</p>`;
+        const result = await videoToGifBlob(file);
+        convertedBlob = result.blob;
+        convertedName = file.name.replace(/\.[^.]+$/, "") + ".gif";
+        $("mediaResult").innerHTML = `<p><strong>Converted:</strong> ${convertedBlob.size.toLocaleString()} bytes (GIF, ${result.width}x${result.height}, ${result.frames} frames)</p><p><img class="preview-media" src="${URL.createObjectURL(convertedBlob)}" alt=""></p>`;
+      } else {
+        convertedBlob = file.slice(0, file.size, file.type || "application/octet-stream");
+        const ext = prompt("保存する拡張子を入力してください", file.type.startsWith("audio/") ? "mp3" : "mp4") || "bin";
+        convertedName = file.name.replace(/\.[^.]+$/, "") + "." + ext.replace(/^\./, "");
+        $("mediaResult").innerHTML += `<p><strong>Note:</strong> GIF以外の動画/音声は再エンコードせず、同じバイト列を指定拡張子で保存します。完全な形式変換にはffmpegなどの処理系が必要です。</p>`;
+      }
+      toast("変換しました");
+    }
+
+    function populateTimezones() {
+      const zones = ["Asia/Tokyo", "UTC", "America/Los_Angeles", "America/New_York", "Europe/London", "Europe/Paris", "Asia/Singapore", "Asia/Seoul", "Australia/Sydney"];
+      for (const id of ["fromTz", "toTz"]) {
+        $(id).innerHTML = zones.map((z) => `<option value="${z}">${z}</option>`).join("");
+      }
+      $("fromTz").value = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Tokyo";
+      $("toTz").value = "UTC";
+    }
+    function formatInTz(date, tz) {
+      return new Intl.DateTimeFormat("sv-SE", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(date);
+    }
+    function timeReport(date) {
+      const zones = [...new Set([$("fromTz").value, $("toTz").value, "UTC", "Asia/Tokyo"])];
+      return [
+        `ISO: ${date.toISOString()}`,
+        `Epoch seconds: ${Math.floor(date.getTime() / 1000)}`,
+        `Epoch milliseconds: ${date.getTime()}`,
+        "",
+        ...zones.map((z) => `${z}: ${formatInTz(date, z)}`)
+      ].join("\n");
+    }
+
+    function qrGenerate(text) {
+      const versions = [
+        { v: 1, size: 21, data: 19, ecc: 7, align: [] },
+        { v: 2, size: 25, data: 34, ecc: 10, align: [6, 18] },
+        { v: 3, size: 29, data: 55, ecc: 15, align: [6, 22] },
+        { v: 4, size: 33, data: 80, ecc: 20, align: [6, 26] }
+      ];
+      const bytes = [...enc.encode(text)];
+      let spec = versions.find((x) => 4 + 8 + bytes.length * 8 <= x.data * 8);
+      if (!spec) throw new Error("長すぎます。短いURLやテキストにしてください。");
+      const data = makeQrData(bytes, spec.data);
+      const ecc = reedSolomon(data, spec.ecc);
+      const codewords = data.concat(ecc);
+      const base = makeQrBase(spec);
+      placeQrData(base, codewords);
+      let best = null;
+      for (let mask = 0; mask < 8; mask++) {
+        const m = cloneMatrix(base);
+        applyMask(m, mask);
+        addFormat(m, mask);
+        const score = qrPenalty(m);
+        if (!best || score < best.score) best = { m, mask, score };
+      }
+      return { matrix: best.m, version: spec.v, mask: best.mask };
+    }
+    function bitsToBytes(bits, total) {
+      while (bits.length % 8) bits.push(0);
+      const out = [];
+      for (let i = 0; i < bits.length; i += 8) out.push(parseInt(bits.slice(i, i + 8).join(""), 2));
+      let pad = 0;
+      while (out.length < total) out.push(pad++ % 2 ? 0x11 : 0xec);
+      return out.slice(0, total);
+    }
+    function makeQrData(bytes, total) {
+      const bits = [0,1,0,0];
+      const len = bytes.length;
+      for (let i = 7; i >= 0; i--) bits.push((len >> i) & 1);
+      for (const b of bytes) for (let i = 7; i >= 0; i--) bits.push((b >> i) & 1);
+      bits.push(0,0,0,0);
+      return bitsToBytes(bits, total);
+    }
+    const gfExp = new Array(512), gfLog = new Array(256);
+    function initGf() {
+      let x = 1;
+      for (let i = 0; i < 255; i++) {
+        gfExp[i] = x; gfLog[x] = i; x <<= 1; if (x & 256) x ^= 0x11d;
+      }
+      for (let i = 255; i < 512; i++) gfExp[i] = gfExp[i - 255];
+    }
+    function gfMul(a, b) { return a && b ? gfExp[gfLog[a] + gfLog[b]] : 0; }
+    function rsGenerator(deg) {
+      let poly = [1];
+      for (let i = 0; i < deg; i++) {
+        const next = new Array(poly.length + 1).fill(0);
+        for (let j = 0; j < poly.length; j++) {
+          next[j] ^= poly[j];
+          next[j + 1] ^= gfMul(poly[j], gfExp[i]);
+        }
+        poly = next;
+      }
+      return poly;
+    }
+    function reedSolomon(data, deg) {
+      const gen = rsGenerator(deg), res = new Array(deg).fill(0);
+      for (const d of data) {
+        const factor = d ^ res.shift();
+        res.push(0);
+        for (let i = 0; i < deg; i++) res[i] ^= gfMul(gen[i + 1], factor);
+      }
+      return res;
+    }
+    function makeMatrix(size) {
+      return Array.from({ length: size }, () => Array.from({ length: size }, () => ({ v: false, f: false })));
+    }
+    function setM(m, x, y, v, f = true) { if (m[y] && m[y][x]) { m[y][x].v = !!v; m[y][x].f = f; } }
+    function finder(m, x, y) {
+      for (let dy = -1; dy <= 7; dy++) for (let dx = -1; dx <= 7; dx++) {
+        const xx = x + dx, yy = y + dy;
+        const on = dx >= 0 && dx <= 6 && dy >= 0 && dy <= 6 && (dx === 0 || dx === 6 || dy === 0 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4));
+        setM(m, xx, yy, on, true);
+      }
+    }
+    function alignment(m, cx, cy) {
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) setM(m, cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1, true);
+    }
+    function makeQrBase(spec) {
+      const m = makeMatrix(spec.size), n = spec.size;
+      finder(m, 0, 0); finder(m, n - 7, 0); finder(m, 0, n - 7);
+      for (let i = 8; i < n - 8; i++) { setM(m, i, 6, i % 2 === 0, true); setM(m, 6, i, i % 2 === 0, true); }
+      if (spec.align.length) for (const x of spec.align) for (const y of spec.align) if (!((x === 6 && y === 6) || (x === 6 && y === n - 7) || (x === n - 7 && y === 6))) alignment(m, x, y);
+      setM(m, 8, n - 8, true, true);
+      for (let i = 0; i < 9; i++) { setM(m, 8, i, false, true); setM(m, i, 8, false, true); setM(m, n - 1 - i, 8, false, true); setM(m, 8, n - 1 - i, false, true); }
+      return m;
+    }
+    function placeQrData(m, codewords) {
+      const bits = [];
+      for (const b of codewords) for (let i = 7; i >= 0; i--) bits.push((b >> i) & 1);
+      const n = m.length; let bit = 0, up = true;
+      for (let x = n - 1; x > 0; x -= 2) {
+        if (x === 6) x--;
+        for (let k = 0; k < n; k++) {
+          const y = up ? n - 1 - k : k;
+          for (let dx = 0; dx < 2; dx++) {
+            const cell = m[y][x - dx];
+            if (!cell.f) cell.v = !!bits[bit++];
+          }
+        }
+        up = !up;
+      }
+    }
+    function cloneMatrix(m) { return m.map((r) => r.map((c) => ({ ...c }))); }
+    function maskBit(mask, x, y) {
+      return [
+        (x + y) % 2 === 0, y % 2 === 0, x % 3 === 0, (x + y) % 3 === 0,
+        (Math.floor(y / 2) + Math.floor(x / 3)) % 2 === 0,
+        ((x * y) % 2) + ((x * y) % 3) === 0,
+        (((x * y) % 2) + ((x * y) % 3)) % 2 === 0,
+        (((x + y) % 2) + ((x * y) % 3)) % 2 === 0
+      ][mask];
+    }
+    function applyMask(m, mask) {
+      for (let y = 0; y < m.length; y++) for (let x = 0; x < m.length; x++) if (!m[y][x].f && maskBit(mask, x, y)) m[y][x].v = !m[y][x].v;
+    }
+    function addFormat(m, mask) {
+      const format = [0x77c4,0x72f3,0x7daa,0x789d,0x662f,0x6318,0x6c41,0x6976][mask];
+      const n = m.length;
+      const a = [[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
+      const b = [[n-1,8],[n-2,8],[n-3,8],[n-4,8],[n-5,8],[n-6,8],[n-7,8],[8,n-8],[8,n-7],[8,n-6],[8,n-5],[8,n-4],[8,n-3],[8,n-2],[8,n-1]];
+      for (let i = 0; i < 15; i++) { const val = ((format >> i) & 1) === 1; setM(m, a[i][0], a[i][1], val, true); setM(m, b[i][0], b[i][1], val, true); }
+    }
+    function qrPenalty(m) {
+      const n = m.length; let p = 0, dark = 0;
+      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) dark += m[y][x].v ? 1 : 0;
+      for (let y = 0; y < n; y++) {
+        let run = 1; for (let x = 1; x < n; x++) { if (m[y][x].v === m[y][x-1].v) run++; else { if (run >= 5) p += run - 2; run = 1; } } if (run >= 5) p += run - 2;
+      }
+      for (let x = 0; x < n; x++) {
+        let run = 1; for (let y = 1; y < n; y++) { if (m[y][x].v === m[y-1][x].v) run++; else { if (run >= 5) p += run - 2; run = 1; } } if (run >= 5) p += run - 2;
+      }
+      p += Math.floor(Math.abs(dark * 100 / (n*n) - 50) / 5) * 10;
+      return p;
+    }
+    function drawQr() {
+      try {
+        const qr = qrGenerate($("qrInput").value);
+        const c = $("qrCanvas"), ctx = c.getContext("2d"), n = qr.matrix.length, pad = 4, cell = Math.floor(c.width / (n + pad * 2));
+        c.width = c.height = cell * (n + pad * 2);
+        ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
+        ctx.fillStyle = "#111";
+        for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (qr.matrix[y][x].v) ctx.fillRect((x + pad) * cell, (y + pad) * cell, cell, cell);
+        $("qrInfo").textContent = `Version ${qr.version}, mask ${qr.mask}, ${enc.encode($("qrInput").value).length} bytes`;
+      } catch (e) { $("qrInfo").textContent = e.message; }
+    }
+
+    function renderProof() {
+      const csp = document.querySelector("meta[http-equiv='Content-Security-Policy']").content;
+      $("proofBox").innerHTML = [
+        ["外部への通信", csp.includes("connect-src 'none'") ? "禁止されています" : "確認できません"],
+        ["外部スクリプト", [...document.scripts].filter((s) => s.src && !s.src.startsWith(location.origin)).length === 0 ? "読み込んでいません" : "外部読み込みがあります"],
+        ["通信API", "ページ内で止める設定です"],
+        ["オフライン保存", navigator.serviceWorker ? "対応ブラウザです" : "このブラウザでは未対応です"],
+        ["現在のブラウザ", navigator.onLine ? "オンラインですが、このページは外部送信を止めます" : "オフラインです"]
+      ].map(([k, v]) => `<div>${escapeHtml(k)}</div><div>${escapeHtml(v)}</div>`).join("");
+    }
+
+    function initNav() {
+      const nav = $("nav");
+      const groups = [...new Set(tools.map((t) => t[0]))];
+      nav.innerHTML = groups.map((g) => `<div class="nav-group"><strong>${g}</strong>${tools.filter((t) => t[0] === g).map(([, id, icon, label, desc]) => `<button class="nav-link" data-open="${id}"><span class="nav-icon">${icon}</span><span class="nav-text"><span class="nav-label">${label}</span><span class="nav-desc">${desc}</span></span></button>`).join("")}</div>`).join("");
+      $("quickTools").innerHTML = quickToolIds.map((id) => {
+        const [, toolId,, label, desc] = tools.find((t) => t[1] === id);
+        return `<button class="quick-tool" data-open="${toolId}"><strong>${label}</strong><span>${desc}</span></button>`;
+      }).join("");
+      document.addEventListener("click", (e) => {
+        const open = e.target.closest("[data-open]")?.dataset.open;
+        if (open) showTool(open);
+        const copy = e.target.closest("[data-copy]")?.dataset.copy;
+        if (copy) copyText(copy);
+        const clear = e.target.closest("[data-clear]")?.dataset.clear;
+        if (clear) clear.split(/\s+/).forEach((id) => { const el = $(id); if (el) ("value" in el ? el.value = "" : el.textContent = ""); });
+      });
+      $("toolSearch").addEventListener("input", () => {
+        const q = $("toolSearch").value.toLowerCase();
+        document.querySelectorAll(".nav-link").forEach((b) => {
+          const id = b.dataset.open, sec = $(id);
+          b.classList.toggle("hidden", q && !(`${b.textContent} ${sec.dataset.title}`.toLowerCase().includes(q)));
+        });
+        document.querySelectorAll(".quick-tool").forEach((b) => {
+          const id = b.dataset.open, sec = $(id);
+          b.classList.toggle("hidden", q && !(`${b.textContent} ${sec.dataset.title}`.toLowerCase().includes(q)));
+        });
+      });
+      window.addEventListener("hashchange", () => {
+        const id = location.hash.slice(1);
+        if (id && $(id)) showTool(id, true);
+      });
+      showTool(location.hash.slice(1) || "json");
+    }
+    function showTool(id, fromHash = false) {
+      document.querySelectorAll(".tool").forEach((s) => s.classList.toggle("active", s.id === id));
+      document.querySelectorAll(".nav-link").forEach((b) => b.classList.toggle("active", b.dataset.open === id));
+      if (!fromHash) history.replaceState(null, "", "#" + id);
+      if (id === "privacy") { renderProof(); renderNetworkLog(); }
+    }
+
+    function bind() {
+      $("jsonFormat").onclick = () => jsonAction("format"); $("jsonMinify").onclick = () => jsonAction("minify"); $("jsonSort").onclick = () => jsonAction("sort"); $("jsonUnquote").onclick = () => jsonAction("unquote");
+      $("jwtParse").onclick = parseJwt;
+      $("b64Encode").onclick = () => $("base64Output").value = b64EncodeText($("base64Input").value);
+      $("b64Decode").onclick = () => { try { $("base64Output").value = b64DecodeText($("base64Input").value.trim()); } catch(e) { $("base64Output").value = "Error: " + e.message; } };
+      $("b64UrlEncode").onclick = () => $("base64Output").value = b64EncodeText($("base64Input").value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      $("b64UrlDecode").onclick = () => { try { $("base64Output").value = b64DecodeText(b64UrlToB64($("base64Input").value.trim())); } catch(e) { $("base64Output").value = "Error: " + e.message; } };
+      $("b64File").onchange = async () => {
+        const f = $("b64File").files[0]; if (!f) return;
+        const buf = new Uint8Array(await f.arrayBuffer()); let bin = ""; buf.forEach((b) => bin += String.fromCharCode(b));
+        $("base64Output").value = `data:${f.type || "application/octet-stream"};base64,${btoa(bin)}`;
+      };
+      $("uuidBtn").onclick = () => $("stringOutput").value = crypto.randomUUID();
+      $("urlEnc").onclick = () => $("stringOutput").value = encodeURIComponent($("stringInput").value);
+      $("urlDec").onclick = () => { try { $("stringOutput").value = decodeURIComponent($("stringInput").value); } catch(e) { $("stringOutput").value = "Error: " + e.message; } };
+      $("htmlEsc").onclick = () => $("stringOutput").value = escapeHtml($("stringInput").value);
+      $("htmlUnesc").onclick = () => $("stringOutput").value = unescapeHtml($("stringInput").value);
+      $("caseTools").onclick = () => $("stringOutput").value = JSON.stringify(caseVariants($("stringInput").value), null, 2);
+      $("hashBtn").onclick = async () => $("stringOutput").value = await sha256($("stringInput").value);
+      $("mdInput").addEventListener("input", () => $("mdPreview").innerHTML = markdownToHtml($("mdInput").value));
+      $("mdPreview").innerHTML = markdownToHtml($("mdInput").value);
+      $("genPassword").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => randomChars(+$("randomLength").value, "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*_-+=")).join("\n");
+      $("genToken").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => [...randomBytes(+$("randomLength").value)].map((b) => b.toString(16).padStart(2, "0")).join("")).join("\n");
+      $("genNumber").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => crypto.getRandomValues(new Uint32Array(1))[0]).join("\n");
+      $("genColor").onclick = () => {
+        const colors = Array.from({ length: +$("randomCount").value }, () => "#" + [...randomBytes(3)].map((b) => b.toString(16).padStart(2, "0")).join(""));
+        $("randomOutput").value = colors.join("\n"); $("colorSwatches").innerHTML = colors.map((c) => `<span class="swatch" title="${c}" style="background:${c}"></span>`).join("");
+      };
+      $("genLorem").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => Array.from({ length: +$("randomLength").value }, () => words[Math.floor(Math.random() * words.length)]).join(" ")).join("\n\n");
+      $("genCsv").onclick = () => $("randomOutput").value = "id,name,value\n" + Array.from({ length: +$("randomCount").value }, (_, i) => `${i+1},item_${i+1},${crypto.getRandomValues(new Uint32Array(1))[0] % 10000}`).join("\n");
+      const drop = $("mediaDrop");
+      ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("drag"); }));
+      ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("drag"); }));
+      drop.addEventListener("drop", (e) => handleMediaFile(e.dataTransfer.files[0]));
+      $("mediaFile").onchange = () => handleMediaFile($("mediaFile").files[0]);
+      $("convertMedia").onclick = convertMedia;
+      $("downloadMedia").onclick = () => convertedBlob ? downloadBlob(convertedBlob, convertedName) : toast("先に変換してください");
+      $("renderIcon").onclick = renderIcon; $("iconText").oninput = renderIcon; $("iconBg").oninput = renderIcon; $("iconFg").oninput = renderIcon; $("iconImage").onchange = renderIcon;
+      $("downloadIcon").onclick = () => $("iconCanvas").toBlob((b) => downloadBlob(b, "icon.png"), "image/png");
+      $("downloadFavicon").onclick = async () => downloadBlob(await canvasToIcoBlob($("iconCanvas")), "favicon.ico");
+      $("makeQr").onclick = drawQr; $("downloadQr").onclick = () => $("qrCanvas").toBlob((b) => downloadBlob(b, "qr.png"), "image/png");
+      $("timeNow").onclick = () => { const d = new Date(); $("timeInput").value = d.toISOString(); $("timeOutput").value = timeReport(d); };
+      $("timeConvert").onclick = () => { const d = new Date($("timeInput").value || Date.now()); $("timeOutput").value = isNaN(d) ? "Invalid date" : timeReport(d); };
+      $("epochConvert").onclick = () => { const n = Number($("timeInput").value.trim()); const d = new Date(n > 1e12 ? n : n * 1000); $("timeOutput").value = isNaN(d) ? "Invalid epoch" : timeReport(d); };
+      $("testNetwork").onclick = () => fetch("https://example.com/test").catch(() => toast("外部通信を止めました"));
+      $("selfTestBtn").onclick = () => { fetch("https://example.com/test").catch(() => {}); renderProof(); drawQr(); renderIcon(); showTool("privacy"); toast("外部通信を止めました"); };
+      $("clearLog").onclick = () => { networkLog.length = 0; renderNetworkLog(); };
+      renderIcon(); drawQr();
+    }
+
+    async function initServiceWorker() {
+      if (!("serviceWorker" in navigator)) { $("swBadge").textContent = "cache unsupported"; return; }
+      try {
+        const reg = await navigator.serviceWorker.register("./sw.js");
+        $("swBadge").textContent = reg.active || reg.waiting || reg.installing ? "オフライン保存済み" : "保存準備中";
+        $("swBadge").classList.add("ok");
+      } catch (e) {
+        $("swBadge").textContent = "保存未対応";
+      }
+    }
+
+    installNetworkGuards();
+    initGf();
+    initNav();
+    populateTimezones();
+    bind();
+    renderProof();
+    renderNetworkLog();
+    initServiceWorker();
+  })();
+  </script>
 </body>
 </html>

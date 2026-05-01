@@ -521,7 +521,6 @@
           </div>
           <div class="row">
             <button id="diffSample">サンプル入力</button>
-            <button class="primary" id="diffRun">比較する</button>
             <button id="diffSwap">左右を入れ替え</button>
           </div>
           <div id="diffMeta" class="diff-meta"></div>
@@ -937,6 +936,10 @@ features:
   diff: true
 message: hello utility tools`;
       renderDiff();
+    }
+    function scheduleDiffRender() {
+      clearTimeout(scheduleDiffRender.timer);
+      scheduleDiffRender.timer = setTimeout(renderDiff, 120);
     }
     async function sha256(s) {
       const hash = await crypto.subtle.digest("SHA-256", enc.encode(s));
@@ -1560,8 +1563,10 @@ message: hello utility tools`;
       $("caseTools").onclick = () => $("stringOutput").value = JSON.stringify(caseVariants($("stringInput").value), null, 2);
       $("hashBtn").onclick = async () => $("stringOutput").value = await sha256($("stringInput").value);
       $("diffSample").onclick = sampleDiff;
-      $("diffRun").onclick = renderDiff;
       $("diffSwap").onclick = () => { const left = $("diffLeft").value; $("diffLeft").value = $("diffRight").value; $("diffRight").value = left; renderDiff(); };
+      $("diffLeft").addEventListener("input", scheduleDiffRender);
+      $("diffRight").addEventListener("input", scheduleDiffRender);
+      renderDiff();
       $("mdSample").onclick = () => { $("mdInput").value = sampleMarkdown(); $("mdPreview").innerHTML = markdownToHtml($("mdInput").value); };
       $("mdInput").addEventListener("input", () => $("mdPreview").innerHTML = markdownToHtml($("mdInput").value));
       $("mdPreview").innerHTML = markdownToHtml($("mdInput").value);

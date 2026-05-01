@@ -197,6 +197,19 @@
     .tool h2 { margin: 0; font-size: 1.25rem; }
     .tool-head p { margin: .28rem 0 0; color: var(--muted); line-height: 1.55; font-size: .9rem; }
     .actions { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: flex-end; }
+    .option-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: .58rem .72rem;
+      background: #fff;
+      color: #33423e;
+      font-weight: 650;
+      font-size: .9rem;
+    }
+    .option-toggle input { width: auto; margin: 0; }
     .body { padding: 1rem; }
     .grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
     .compact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
@@ -302,6 +315,23 @@
       color: var(--muted);
       font-size: .84rem;
     }
+    @media (min-width: 1200px) {
+      .split {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: start;
+      }
+      .diff-layout {
+        grid-template-columns: minmax(22rem, .8fr) minmax(0, 1.35fr);
+        align-items: start;
+      }
+      .diff-layout .diff-view {
+        grid-column: 2;
+        grid-row: 1 / span 3;
+      }
+      .diff-layout .diff-meta {
+        align-self: start;
+      }
+    }
     .drop {
       border: 1px dashed #9aa8a4;
       border-radius: 8px;
@@ -399,6 +429,7 @@
           <p>貼り付けた文字や選んだファイルは、このブラウザの中だけで処理します。外部サービスへ送る処理は入れておらず、通信しようとした場合もページ内で止めて、下の画面に記録します。</p>
         </div>
         <div class="actions">
+          <label class="option-toggle"><input id="autoCopyToggle" type="checkbox" checked>結果を自動コピー</label>
           <button class="primary" data-open="privacy">安全のしくみを見る</button>
           <button id="selfTestBtn">通信ブロックを試す</button>
         </div>
@@ -412,7 +443,7 @@
             <button data-clear="jsonInput jsonOutput">クリア</button>
           </div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label for="jsonInput">入力</label>
             <textarea id="jsonInput" placeholder='{"hello":"world"}'></textarea>
@@ -437,7 +468,7 @@
           <div><h2>JWT解析</h2><p>JWTのヘッダーとペイロードをこの画面だけで読みやすく表示します。署名検証は行いません。</p></div>
           <div class="actions"><button data-copy="jwtOutput">コピー</button><button data-clear="jwtInput jwtOutput">クリア</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label for="jwtInput">JWT</label>
             <textarea id="jwtInput" placeholder="eyJhbGciOi..."></textarea>
@@ -455,7 +486,7 @@
           <div><h2>Base64変換</h2><p>テキストやファイルをBase64へ変換、Base64から元の文字列へ戻します。</p></div>
           <div class="actions"><button data-copy="base64Output">コピー</button><button data-clear="base64Input base64Output">クリア</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label for="base64Input">入力</label>
             <textarea id="base64Input"></textarea>
@@ -481,7 +512,7 @@
           <div><h2>文字列変換</h2><p>UUID生成、URLエンコード、HTMLエスケープ、ケース変換、SHA-256ハッシュ。</p></div>
           <div class="actions"><button data-copy="stringOutput">コピー</button><button data-clear="stringInput stringOutput">クリア</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label for="stringInput">入力</label>
             <textarea id="stringInput"></textarea>
@@ -508,7 +539,7 @@
           <div><h2>差分ビューア</h2><p>2つのテキストを見比べやすい色付き表示で比較します。追加、削除、変更を左右に並べて確認できます。</p></div>
           <div class="actions"><button data-clear="diffLeft diffRight diffOutput">クリア</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid diff-layout">
           <div class="compact-grid">
             <div class="field">
               <label for="diffLeft">変更前</label>
@@ -533,7 +564,7 @@
           <div><h2>Markdownエディター</h2><p>Markdownのプレビュー、コードブロック、表、Mermaid風フローチャートの簡易表示。</p></div>
           <div class="actions"><button data-copy="mdInput">Markdownコピー</button><button data-clear="mdInput mdPreview">クリア</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label for="mdInput">Markdown</label>
             <textarea id="mdInput" class="tall"># Utility Tools
@@ -563,7 +594,7 @@ graph TD
           <div><h2>ランダム生成</h2><p>パスワード、トークン、数値、色、Lorem、CSVサンプルを生成します。</p></div>
           <div class="actions"><button data-copy="randomOutput">コピー</button><button data-clear="randomOutput">クリア</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label>設定</label>
             <div class="compact-grid">
@@ -610,7 +641,7 @@ graph TD
           <div><h2>画像をICOに変換</h2><p>既存のPNG/JPEG/WebP画像をfavicon.ico形式に変換します。選んだ画像はブラウザ内だけで処理します。</p></div>
           <div class="actions"><button id="downloadIcon">PNGでも保存</button><button id="downloadFavicon" class="primary">ICO保存</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label for="iconImage">変換する画像</label>
             <input id="iconImage" type="file" accept="image/*">
@@ -643,7 +674,7 @@ graph TD
           <div><h2>QRコード生成</h2><p>短いテキストやURLをQRコードに変換します。すべてブラウザ内で生成します。</p></div>
           <div class="actions"><button id="downloadQr">PNG保存</button><button data-clear="qrInput">クリア</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label for="qrInput">文字列 / URL</label>
             <textarea id="qrInput" class="mini">https://github.com/lirlia/utility-tools</textarea>
@@ -662,7 +693,7 @@ graph TD
           <div><h2>時刻変換</h2><p>エポック秒・ミリ秒と、各タイムゾーンの日時を相互変換します。</p></div>
           <div class="actions"><button data-copy="timeOutput">コピー</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label for="timeInput">日時またはEpoch</label>
             <input id="timeInput" placeholder="2026-04-28T12:00:00 or 1777354800">
@@ -686,7 +717,7 @@ graph TD
           <div><h2>データ保護のしくみ</h2><p>入力内容を外へ送らないための状態と、通信を止めた記録を確認できます。</p></div>
           <div class="actions"><button id="testNetwork">外部通信を試して止める</button><button id="clearLog">ログ消去</button></div>
         </div>
-        <div class="body grid">
+        <div class="body grid split">
           <div class="field">
             <label>現在の状態</label>
             <div class="output kv" id="proofBox"></div>
@@ -780,6 +811,14 @@ graph TD
       const text = "value" in el ? el.value : el.textContent;
       return copyRawText(text);
     }
+    function autoCopyEnabled() {
+      return $("autoCopyToggle")?.checked;
+    }
+    function writeOutput(id, value, message = "結果をコピーしました") {
+      $(id).value = value;
+      if (autoCopyEnabled()) copyRawText(value, message);
+      return value;
+    }
     function sortKeys(value) {
       if (Array.isArray(value)) return value.map(sortKeys);
       if (value && typeof value === "object") {
@@ -793,10 +832,11 @@ graph TD
         let value = JSON.parse(src);
         if (mode === "unquote" && typeof value === "string") value = JSON.parse(value);
         if (mode === "sort") value = sortKeys(value);
-        $("jsonOutput").value = mode === "minify" ? JSON.stringify(value) : JSON.stringify(value, null, 2);
-        const bytes = enc.encode($("jsonOutput").value).length;
+        const output = mode === "minify" ? JSON.stringify(value) : JSON.stringify(value, null, 2);
+        $("jsonOutput").value = output;
+        const bytes = enc.encode(output).length;
         $("jsonMeta").textContent = `OK: ${Array.isArray(value) ? "array" : typeof value}, ${bytes.toLocaleString()} bytes`;
-        if (mode === "format") copyRawText($("jsonOutput").value, "整形結果をコピーしました");
+        if (autoCopyEnabled()) copyRawText(output, mode === "format" ? "整形結果をコピーしました" : "結果をコピーしました");
       } catch (e) {
         $("jsonOutput").value = `Error: ${e.message}`;
         $("jsonMeta").textContent = "Invalid JSON";
@@ -821,7 +861,7 @@ graph TD
         if (parts.length < 2) throw new Error("JWT must have at least header.payload");
         const header = JSON.parse(b64DecodeText(b64UrlToB64(parts[0])));
         const payload = JSON.parse(b64DecodeText(b64UrlToB64(parts[1])));
-        $("jwtOutput").value = JSON.stringify({ header, payload, signature: parts[2] ? `${parts[2].slice(0, 16)}...` : null }, null, 2);
+        writeOutput("jwtOutput", JSON.stringify({ header, payload, signature: parts[2] ? `${parts[2].slice(0, 16)}...` : null }, null, 2));
       } catch (e) {
         $("jwtOutput").value = `Error: ${e.message}`;
       }
@@ -1540,28 +1580,28 @@ message: hello utility tools`;
       $("jwtParse").onclick = parseJwt;
       $("b64Sample").onclick = () => {
         $("base64Input").value = "Utility Tools sample: 日本語もBase64にできます。";
-        $("base64Output").value = b64EncodeText($("base64Input").value);
+        writeOutput("base64Output", b64EncodeText($("base64Input").value));
       };
-      $("b64Encode").onclick = () => $("base64Output").value = b64EncodeText($("base64Input").value);
-      $("b64Decode").onclick = () => { try { $("base64Output").value = b64DecodeText($("base64Input").value.trim()); } catch(e) { $("base64Output").value = "Error: " + e.message; } };
-      $("b64UrlEncode").onclick = () => $("base64Output").value = b64EncodeText($("base64Input").value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-      $("b64UrlDecode").onclick = () => { try { $("base64Output").value = b64DecodeText(b64UrlToB64($("base64Input").value.trim())); } catch(e) { $("base64Output").value = "Error: " + e.message; } };
+      $("b64Encode").onclick = () => writeOutput("base64Output", b64EncodeText($("base64Input").value));
+      $("b64Decode").onclick = () => { try { writeOutput("base64Output", b64DecodeText($("base64Input").value.trim())); } catch(e) { $("base64Output").value = "Error: " + e.message; } };
+      $("b64UrlEncode").onclick = () => writeOutput("base64Output", b64EncodeText($("base64Input").value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""));
+      $("b64UrlDecode").onclick = () => { try { writeOutput("base64Output", b64DecodeText(b64UrlToB64($("base64Input").value.trim()))); } catch(e) { $("base64Output").value = "Error: " + e.message; } };
       $("b64File").onchange = async () => {
         const f = $("b64File").files[0]; if (!f) return;
         const buf = new Uint8Array(await f.arrayBuffer()); let bin = ""; buf.forEach((b) => bin += String.fromCharCode(b));
-        $("base64Output").value = `data:${f.type || "application/octet-stream"};base64,${btoa(bin)}`;
+        writeOutput("base64Output", `data:${f.type || "application/octet-stream"};base64,${btoa(bin)}`);
       };
       $("stringSample").onclick = () => {
         $("stringInput").value = "Hello Utility Tools! <div class=\"demo\">日本語 sample & escape</div> https://example.com/?q=日本語";
-        $("stringOutput").value = JSON.stringify(caseVariants("hello utility tools sample"), null, 2);
+        writeOutput("stringOutput", JSON.stringify(caseVariants("hello utility tools sample"), null, 2));
       };
-      $("uuidBtn").onclick = () => $("stringOutput").value = crypto.randomUUID();
-      $("urlEnc").onclick = () => $("stringOutput").value = encodeURIComponent($("stringInput").value);
-      $("urlDec").onclick = () => { try { $("stringOutput").value = decodeURIComponent($("stringInput").value); } catch(e) { $("stringOutput").value = "Error: " + e.message; } };
-      $("htmlEsc").onclick = () => $("stringOutput").value = escapeHtml($("stringInput").value);
-      $("htmlUnesc").onclick = () => $("stringOutput").value = unescapeHtml($("stringInput").value);
-      $("caseTools").onclick = () => $("stringOutput").value = JSON.stringify(caseVariants($("stringInput").value), null, 2);
-      $("hashBtn").onclick = async () => $("stringOutput").value = await sha256($("stringInput").value);
+      $("uuidBtn").onclick = () => writeOutput("stringOutput", crypto.randomUUID());
+      $("urlEnc").onclick = () => writeOutput("stringOutput", encodeURIComponent($("stringInput").value));
+      $("urlDec").onclick = () => { try { writeOutput("stringOutput", decodeURIComponent($("stringInput").value)); } catch(e) { $("stringOutput").value = "Error: " + e.message; } };
+      $("htmlEsc").onclick = () => writeOutput("stringOutput", escapeHtml($("stringInput").value));
+      $("htmlUnesc").onclick = () => writeOutput("stringOutput", unescapeHtml($("stringInput").value));
+      $("caseTools").onclick = () => writeOutput("stringOutput", JSON.stringify(caseVariants($("stringInput").value), null, 2));
+      $("hashBtn").onclick = async () => writeOutput("stringOutput", await sha256($("stringInput").value));
       $("diffSample").onclick = sampleDiff;
       $("diffSwap").onclick = () => { const left = $("diffLeft").value; $("diffLeft").value = $("diffRight").value; $("diffRight").value = left; renderDiff(); };
       $("diffLeft").addEventListener("input", scheduleDiffRender);
@@ -1570,15 +1610,15 @@ message: hello utility tools`;
       $("mdSample").onclick = () => { $("mdInput").value = sampleMarkdown(); $("mdPreview").innerHTML = markdownToHtml($("mdInput").value); };
       $("mdInput").addEventListener("input", () => $("mdPreview").innerHTML = markdownToHtml($("mdInput").value));
       $("mdPreview").innerHTML = markdownToHtml($("mdInput").value);
-      $("genPassword").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => randomChars(+$("randomLength").value, "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*_-+=")).join("\n");
-      $("genToken").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => [...randomBytes(+$("randomLength").value)].map((b) => b.toString(16).padStart(2, "0")).join("")).join("\n");
-      $("genNumber").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => crypto.getRandomValues(new Uint32Array(1))[0]).join("\n");
+      $("genPassword").onclick = () => writeOutput("randomOutput", Array.from({ length: +$("randomCount").value }, () => randomChars(+$("randomLength").value, "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*_-+=")).join("\n"));
+      $("genToken").onclick = () => writeOutput("randomOutput", Array.from({ length: +$("randomCount").value }, () => [...randomBytes(+$("randomLength").value)].map((b) => b.toString(16).padStart(2, "0")).join("")).join("\n"));
+      $("genNumber").onclick = () => writeOutput("randomOutput", Array.from({ length: +$("randomCount").value }, () => crypto.getRandomValues(new Uint32Array(1))[0]).join("\n"));
       $("genColor").onclick = () => {
         const colors = Array.from({ length: +$("randomCount").value }, () => "#" + [...randomBytes(3)].map((b) => b.toString(16).padStart(2, "0")).join(""));
-        $("randomOutput").value = colors.join("\n"); $("colorSwatches").innerHTML = colors.map((c) => `<span class="swatch" title="${c}" style="background:${c}"></span>`).join("");
+        writeOutput("randomOutput", colors.join("\n")); $("colorSwatches").innerHTML = colors.map((c) => `<span class="swatch" title="${c}" style="background:${c}"></span>`).join("");
       };
-      $("genLorem").onclick = () => $("randomOutput").value = Array.from({ length: +$("randomCount").value }, () => Array.from({ length: +$("randomLength").value }, () => words[Math.floor(Math.random() * words.length)]).join(" ")).join("\n\n");
-      $("genCsv").onclick = () => $("randomOutput").value = "id,name,value\n" + Array.from({ length: +$("randomCount").value }, (_, i) => `${i+1},item_${i+1},${crypto.getRandomValues(new Uint32Array(1))[0] % 10000}`).join("\n");
+      $("genLorem").onclick = () => writeOutput("randomOutput", Array.from({ length: +$("randomCount").value }, () => Array.from({ length: +$("randomLength").value }, () => words[Math.floor(Math.random() * words.length)]).join(" ")).join("\n\n"));
+      $("genCsv").onclick = () => writeOutput("randomOutput", "id,name,value\n" + Array.from({ length: +$("randomCount").value }, (_, i) => `${i+1},item_${i+1},${crypto.getRandomValues(new Uint32Array(1))[0] % 10000}`).join("\n"));
       const drop = $("mediaDrop");
       ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("drag"); }));
       ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("drag"); }));
@@ -1591,10 +1631,10 @@ message: hello utility tools`;
       $("downloadFavicon").onclick = async () => downloadBlob(await canvasToIcoBlob($("iconCanvas")), "favicon.ico");
       $("qrSample").onclick = () => { $("qrInput").value = "https://lirlia.github.io/utility-tools/"; drawQr(); };
       $("makeQr").onclick = drawQr; $("downloadQr").onclick = () => $("qrCanvas").toBlob((b) => downloadBlob(b, "qr.png"), "image/png");
-      $("timeSample").onclick = () => { $("timeInput").value = "2026-04-28T12:00:00+09:00"; $("timeOutput").value = timeReport(new Date($("timeInput").value)); };
-      $("timeNow").onclick = () => { const d = new Date(); $("timeInput").value = d.toISOString(); $("timeOutput").value = timeReport(d); };
-      $("timeConvert").onclick = () => { const d = new Date($("timeInput").value || Date.now()); $("timeOutput").value = isNaN(d) ? "Invalid date" : timeReport(d); };
-      $("epochConvert").onclick = () => { const n = Number($("timeInput").value.trim()); const d = new Date(n > 1e12 ? n : n * 1000); $("timeOutput").value = isNaN(d) ? "Invalid epoch" : timeReport(d); };
+      $("timeSample").onclick = () => { $("timeInput").value = "2026-04-28T12:00:00+09:00"; writeOutput("timeOutput", timeReport(new Date($("timeInput").value))); };
+      $("timeNow").onclick = () => { const d = new Date(); $("timeInput").value = d.toISOString(); writeOutput("timeOutput", timeReport(d)); };
+      $("timeConvert").onclick = () => { const d = new Date($("timeInput").value || Date.now()); if (isNaN(d)) $("timeOutput").value = "Invalid date"; else writeOutput("timeOutput", timeReport(d)); };
+      $("epochConvert").onclick = () => { const n = Number($("timeInput").value.trim()); const d = new Date(n > 1e12 ? n : n * 1000); if (isNaN(d)) $("timeOutput").value = "Invalid epoch"; else writeOutput("timeOutput", timeReport(d)); };
       $("testNetwork").onclick = () => fetch("https://example.com/test").catch(() => toast("外部通信を止めました"));
       $("selfTestBtn").onclick = () => { fetch("https://example.com/test").catch(() => {}); renderProof(); drawQr(); renderIcon(); showTool("privacy"); toast("外部通信を止めました"); };
       $("clearLog").onclick = () => { networkLog.length = 0; renderNetworkLog(); };

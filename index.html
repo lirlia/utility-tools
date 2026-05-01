@@ -251,6 +251,8 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     .row { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; }
+    .wide-actions { gap: .45rem; }
+    .wide-actions button { padding-left: .64rem; padding-right: .64rem; }
     .hint { color: var(--muted); font-size: .82rem; line-height: 1.5; }
     .mini { min-height: 10rem; }
     .preview {
@@ -327,6 +329,9 @@
       .split {
         grid-template-columns: minmax(0, .96fr) minmax(0, 1.04fr);
         align-items: start;
+      }
+      .split > .field:first-child > .wide-actions {
+        width: calc(208.333% + clamp(1rem, 1.8vw, 1.35rem));
       }
       .diff-layout {
         grid-template-columns: minmax(18rem, .9fr) minmax(0, 1.1fr);
@@ -469,21 +474,19 @@
       <section id="json" class="tool" data-title="JSON Formatter JSON きれい パース まとめる minify">
         <div class="tool-head">
           <div><h2>JSON整形</h2><p>JSONを読みやすく整形、1行に圧縮、キー順に並び替えできます。</p></div>
-          <div class="actions">
-            <button data-copy="jsonOutput">コピー</button>
-            <button data-clear="jsonInput jsonOutput">クリア</button>
-          </div>
         </div>
         <div class="body grid split">
           <div class="field">
             <label for="jsonInput">入力</label>
             <textarea id="jsonInput" placeholder='{"hello":"world"}'></textarea>
-            <div class="row">
+            <div class="row wide-actions">
               <button id="jsonSample">サンプル入力</button>
               <button class="primary" id="jsonFormat">整形</button>
               <button id="jsonMinify">圧縮</button>
               <button id="jsonSort">キーソート</button>
               <button id="jsonUnquote">JSON文字列を展開</button>
+              <button data-copy="jsonOutput">コピー</button>
+              <button data-clear="jsonInput jsonOutput jsonMeta">クリア</button>
             </div>
           </div>
           <div class="field">
@@ -497,13 +500,12 @@
       <section id="jwt" class="tool" data-title="JWT Jot parse token decode header payload">
         <div class="tool-head">
           <div><h2>JWT解析</h2><p>JWTのヘッダーとペイロードをこの画面だけで読みやすく表示します。署名検証は行いません。</p></div>
-          <div class="actions"><button data-copy="jwtOutput">コピー</button><button data-clear="jwtInput jwtOutput">クリア</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
             <label for="jwtInput">JWT</label>
             <textarea id="jwtInput" placeholder="eyJhbGciOi..."></textarea>
-            <div class="row"><button id="jwtSample">サンプル入力</button><button class="primary" id="jwtParse">パース</button></div>
+            <div class="row wide-actions"><button id="jwtSample">サンプル入力</button><button class="primary" id="jwtParse">パース</button><button data-copy="jwtOutput">コピー</button><button data-clear="jwtInput jwtOutput">クリア</button></div>
           </div>
           <div class="field">
             <label for="jwtOutput">解析結果</label>
@@ -515,18 +517,19 @@
       <section id="base64" class="tool" data-title="Base64 encode decode">
         <div class="tool-head">
           <div><h2>Base64変換</h2><p>テキストやファイルをBase64へ変換、Base64から元の文字列へ戻します。</p></div>
-          <div class="actions"><button data-copy="base64Output">コピー</button><button data-clear="base64Input base64Output">クリア</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
             <label for="base64Input">入力</label>
             <textarea id="base64Input"></textarea>
-            <div class="row">
+            <div class="row wide-actions">
               <button id="b64Sample">サンプル入力</button>
               <button class="primary" id="b64Encode">エンコード</button>
               <button id="b64Decode">デコード</button>
               <button id="b64UrlEncode">URL-safe</button>
               <button id="b64UrlDecode">URL-safe解除</button>
+              <button data-copy="base64Output">コピー</button>
+              <button data-clear="base64Input base64Output">クリア</button>
             </div>
             <input id="b64File" type="file">
           </div>
@@ -541,13 +544,12 @@
       <section id="strings" class="tool" data-title="UUID UIディ URL encode HTML escape text string">
         <div class="tool-head">
           <div><h2>文字列変換</h2><p>UUID生成、URLエンコード、HTMLエスケープ、ケース変換、SHA-256ハッシュ。</p></div>
-          <div class="actions"><button data-copy="stringOutput">コピー</button><button data-clear="stringInput stringOutput">クリア</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
             <label for="stringInput">入力</label>
             <textarea id="stringInput"></textarea>
-            <div class="row">
+            <div class="row wide-actions">
               <button id="stringSample">サンプル入力</button>
               <button class="primary" id="uuidBtn">UUID v4</button>
               <button id="urlEnc">URL encode</button>
@@ -556,6 +558,8 @@
               <button id="htmlUnesc">HTML unescape</button>
               <button id="caseTools">Case変換</button>
               <button id="hashBtn">SHA-256</button>
+              <button data-copy="stringOutput">コピー</button>
+              <button data-clear="stringInput stringOutput">クリア</button>
             </div>
           </div>
           <div class="field">
@@ -568,7 +572,6 @@
       <section id="diff" class="tool" data-title="diff difference compare text 差分 比較">
         <div class="tool-head">
           <div><h2>差分ビューア</h2><p>2つのテキストを見比べやすい色付き表示で比較します。追加、削除、変更を左右に並べて確認できます。</p></div>
-          <div class="actions"><button data-clear="diffLeft diffRight diffOutput">クリア</button></div>
         </div>
         <div class="body grid diff-layout">
           <div class="diff-inputs">
@@ -584,6 +587,7 @@
           <div class="row">
             <button id="diffSample">サンプル入力</button>
             <button id="diffSwap">左右を入れ替え</button>
+            <button data-clear="diffLeft diffRight diffOutput diffMeta">クリア</button>
           </div>
           <div id="diffMeta" class="diff-meta"></div>
           <div id="diffOutput" class="diff-view"></div>
@@ -593,7 +597,6 @@
       <section id="markdown" class="tool" data-title="Markdown editor Mermaid preview マークダウン エディター">
         <div class="tool-head">
           <div><h2>Markdownエディター</h2><p>Markdownのプレビュー、コードブロック、表、Mermaid風フローチャートの簡易表示。</p></div>
-          <div class="actions"><button data-copy="mdInput">Markdownコピー</button><button data-clear="mdInput mdPreview">クリア</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
@@ -611,7 +614,7 @@ graph TD
 | JSON | ready |
 | QR | ready |
 </textarea>
-            <button id="mdSample">サンプル入力</button>
+            <div class="row wide-actions"><button id="mdSample">サンプル入力</button><button data-copy="mdInput">Markdownコピー</button><button data-clear="mdInput mdPreview">クリア</button></div>
           </div>
           <div class="field">
             <label>プレビュー</label>
@@ -623,7 +626,6 @@ graph TD
       <section id="random" class="tool" data-title="random generator password token color lorem">
         <div class="tool-head">
           <div><h2>ランダム生成</h2><p>パスワード、トークン、数値、色、Lorem、CSVサンプルを生成します。</p></div>
-          <div class="actions"><button data-copy="randomOutput">コピー</button><button data-clear="randomOutput">クリア</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
@@ -639,6 +641,8 @@ graph TD
               <button id="genColor">色</button>
               <button id="genLorem">Lorem</button>
               <button id="genCsv">CSV</button>
+              <button data-copy="randomOutput">コピー</button>
+              <button data-clear="randomOutput">クリア</button>
             </div>
             <div id="colorSwatches" class="swatches"></div>
           </div>
@@ -649,7 +653,6 @@ graph TD
       <section id="media" class="tool" data-title="image video audio convert extension compress 画像 動画 サウンド 圧縮">
         <div class="tool-head">
           <div><h2>画像・動画・音声変換</h2><p>画像はPNG/JPEG/WebP/GIF/ICOへ変換できます。動画は短いGIFへの変換と、ファイル情報の確認に対応します。</p></div>
-          <div class="actions"><button data-clear="mediaResult">クリア</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
@@ -664,7 +667,7 @@ graph TD
               <div class="field"><label for="gifFps">GIF FPS</label><input id="gifFps" type="number" min="1" max="15" value="8"></div>
               <div class="field"><label for="gifSeconds">GIF最大秒数</label><input id="gifSeconds" type="number" min="1" max="15" value="4"></div>
             </div>
-            <div class="row"><button class="primary" id="convertMedia">変換/圧縮</button><button id="downloadMedia">ダウンロード</button></div>
+            <div class="row"><button class="primary" id="convertMedia">変換/圧縮</button><button id="downloadMedia">ダウンロード</button><button data-clear="mediaResult">クリア</button></div>
           </div>
           <div class="field">
             <label>結果</label>
@@ -676,7 +679,6 @@ graph TD
       <section id="icon" class="tool" data-title="ico converter favicon image png アイコン 変換">
         <div class="tool-head">
           <div><h2>画像をICOに変換</h2><p>既存のPNG/JPEG/WebP画像をfavicon.ico形式に変換します。選んだ画像はブラウザ内だけで処理します。</p></div>
-          <div class="actions"><button id="downloadIcon">PNGでも保存</button><button id="downloadFavicon" class="primary">ICO保存</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
@@ -697,7 +699,7 @@ graph TD
                 </div>
               </div>
             </details>
-            <button class="primary" id="renderIcon">プレビュー更新</button>
+            <div class="row"><button id="renderIcon">プレビュー更新</button><button id="downloadIcon">PNGでも保存</button><button id="downloadFavicon" class="primary">ICO保存</button></div>
           </div>
           <div class="field">
             <label>プレビュー</label>
@@ -709,13 +711,12 @@ graph TD
       <section id="qr" class="tool" data-title="QR code generator qrcode">
         <div class="tool-head">
           <div><h2>QRコード生成</h2><p>短いテキストやURLをQRコードに変換します。すべてブラウザ内で生成します。</p></div>
-          <div class="actions"><button id="downloadQr">PNG保存</button><button data-clear="qrInput">クリア</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
             <label for="qrInput">文字列 / URL</label>
             <textarea id="qrInput" class="mini">https://github.com/lirlia/utility-tools</textarea>
-            <div class="row"><button id="qrSample">サンプル入力</button><button class="primary" id="makeQr">QR生成</button></div>
+            <div class="row"><button id="qrSample">サンプル入力</button><button class="primary" id="makeQr">QR生成</button><button id="downloadQr">PNG保存</button><button data-clear="qrInput qrInfo">クリア</button></div>
             <div id="qrInfo" class="hint"></div>
           </div>
           <div class="field">
@@ -728,7 +729,6 @@ graph TD
       <section id="time" class="tool" data-title="timezone epoch unix time converter タイムゾーン">
         <div class="tool-head">
           <div><h2>時刻変換</h2><p>エポック秒・ミリ秒と、各タイムゾーンの日時を相互変換します。</p></div>
-          <div class="actions"><button data-copy="timeOutput">コピー</button></div>
         </div>
         <div class="body grid split">
           <div class="field">
@@ -743,6 +743,7 @@ graph TD
               <button class="primary" id="timeNow">現在時刻</button>
               <button id="timeConvert">変換</button>
               <button id="epochConvert">Epochから変換</button>
+              <button data-copy="timeOutput">コピー</button>
             </div>
           </div>
           <div class="field"><label for="timeOutput">結果</label><textarea id="timeOutput" class="codebox" readonly></textarea></div>
